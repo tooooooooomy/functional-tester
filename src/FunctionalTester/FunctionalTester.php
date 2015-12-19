@@ -187,7 +187,6 @@ class FunctionalTester
             $_SESSION[$key] = $value;
         }
 
-        //既に存在したら追記
         if (isset($this->env['HTTP_COOKIE'])) {
             session_regenerate_id();
             $this->env['HTTP_COOKIE'] .= ";$name=" . session_id();
@@ -195,5 +194,15 @@ class FunctionalTester
             $this->env['HTTP_COOKIE'] = "$name=" . session_id();
         }
         session_write_close();
+    }
+
+    /**
+     * @param string $name
+     */
+    public function initializeSession($name = 'PHPSESSID')
+    {
+        session_name($name);
+        session_start();
+        session_destroy();
     }
 }

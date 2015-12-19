@@ -142,4 +142,16 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase {
         $tester->addIncludePath(':hogehoge');
         $this->assertEquals('.:/usr/share/pear:/usr/share/php:hogehoge', $tester->getIncludePath());
     }
+
+    function testInitializeSession()
+    {
+        $tester = new FunctionalTester();
+        $tester->setSession(['test' => 'hoge'], 'test');
+
+        $tester->initializeSession('test');
+
+        session_name('test');
+        session_start();
+        $this->assertEmpty($_SESSION);
+    }
 }
