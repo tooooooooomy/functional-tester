@@ -1,7 +1,7 @@
 {
     "name": "kazu9su/Test",
     "type": "library",
-    "description": "This is the test library for PHP legacy products",
+    "description": "This is a test library for PHP legacy products",
     "keywords": ["framework","micro","api","router"],
     "homepage": "https://github.com/kazu9su/Test",
     "license": "MIT",
