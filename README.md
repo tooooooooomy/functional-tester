@@ -7,7 +7,7 @@ If you have difficulty with testing such products, this library can help you.
 
 First, create a new "FunctionalTester" instance.
 
-You can set session or include paths used in your target product.
+You can set session, document root and include paths used in your target product.
 
 If you call `request` method like http request, you can get a parsed response instance of `Guzzle\Http\Message\Response`
 
@@ -19,11 +19,14 @@ class IndexTest extends PHPUnit_Framework_TestCase
     public function testIndex
     {
         $tester = new FunctionalTester();
-
+        
         //set session used in your target product.
         $tester->setSession(['id' => 'hogehoge']);
         
-        //add includePath used in your target product.
+        //set your document root. you can also set as constructer 1st argument.
+        $tester->setDocumentRoot('/path/to/src');
+        
+        //add include path used in your target product. you can also set as constructer 2st argument.
         $tester->addIncludePath(':/path/to/src');
         
         //you can call get or post method like http request
