@@ -1,6 +1,6 @@
 # Test library
 
-This is a library for testing PHP legacy product.
+This is a library for functional test of PHP legacy products.
 If you have difficulty with testing such products, this library can help you.
 
 ## Usage
