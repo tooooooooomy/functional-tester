@@ -1,5 +1,5 @@
 <?php
-namespace Test;
+namespace FunctionalTester;
 
 use Guzzle\Http\Message\Response;
 

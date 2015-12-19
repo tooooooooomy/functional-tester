@@ -1,7 +1,7 @@
 <?php
-namespace Tests\Test;
+namespace Tests\FunctionalTester;
 
-use Test\FunctionalTester;
+use FunctionalTester\FunctionalTester;
 use Codeception\Specify;
 
 class FunctionalTesterTest extends \PHPUnit_Framework_TestCase {
