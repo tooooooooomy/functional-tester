@@ -18,7 +18,7 @@ use Test/FunctionalTester;
 
 class IndexTest extends PHPUnit_Framework_TestCase
 {
-    public function  testIndex
+    public function testIndex
     {
         $tester = new FunctionalTester();
 
@@ -37,7 +37,15 @@ class IndexTest extends PHPUnit_Framework_TestCase
     }
 }
 ```
+## Installation
 
+You can install this library through  [Composer](https://getcomposer.org/) .
+
+```bash
+$ composer require kazu9su/functional-tester
+```
+
+This will install FunctionalTester and all required dependencies.
 
 ## Tests
 
