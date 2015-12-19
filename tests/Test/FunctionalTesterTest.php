@@ -1,9 +1,12 @@
 <?php
+namespace Tests\Test;
 
-use tests\lib\TestCase;
-use psr\Test\FunctionalTester;
+use Test\FunctionalTester;
+use Codeception\Specify;
 
-class FunctionalTesterTest extends TestCase {
+class FunctionalTesterTest extends \PHPUnit_Framework_TestCase {
+
+    use Specify;
 
     private $tester;
 
@@ -76,7 +79,8 @@ class FunctionalTesterTest extends TestCase {
 
     function testGet()
     {
-        $tester = new FunctionalTester('/cposthome/tests/_data/psr/Test/');
+
+        $tester = new FunctionalTester( __DIR__ . '/data/');
 
         $this->specify('When request param is test=hogehoge', function () use($tester) {
             $response = $tester->get('index.php', ['test' => 'hogehoge']);
@@ -99,7 +103,7 @@ class FunctionalTesterTest extends TestCase {
 
     function testPost()
     {
-        $tester = new FunctionalTester('/cposthome/tests/_data/psr/Test/');
+        $tester = new FunctionalTester( __DIR__ . '/data/');
 
         $this->specify('When request param is test=hogehoge', function () use($tester) {
             $response = $tester->post('index.php', ['test' => 'hogehoge']);
@@ -122,7 +126,7 @@ class FunctionalTesterTest extends TestCase {
 
     function testRequest()
     {
-        $tester = new FunctionalTester('/cposthome/tests/_data/psr/Test/');
+        $tester = new FunctionalTester( __DIR__ . '/data/');
         $this->specify('request when multiple session are specified', function () use ($tester) {
             $tester->setSession(['test' => 'hogehoge'], 'test1');
             $tester->setSession(['test' => 'hogehoge'], 'test2');

@@ -1,5 +1,5 @@
 <?php
-namespace psr\Test;
+namespace Test;
 
 use Guzzle\Http\Message\Response;
 
