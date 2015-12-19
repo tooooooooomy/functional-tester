@@ -1,6 +1,6 @@
-# Test library
+# FunctionalTester library
 
-This is a library for testing PHP legacy product.
+This is a library for functional test of PHP legacy products.
 If you have difficulty with testing such products, this library can help you.
 
 ## Usage
@@ -42,4 +42,4 @@ $ phpunit
 
 ## License
 
-The Slim Framework is licensed under the MIT license. See [License File](LICENSE.md) for more information.
+The FunctionalTester is licensed under the MIT license. See [License File](LICENSE.md) for more information.
