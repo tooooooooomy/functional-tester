@@ -1,5 +1,5 @@
 {
-    "name": "kazu9su/Test",
+    "name": "kazu9su/test",
     "type": "library",
     "description": "This is a test library for PHP legacy products",
     "keywords": ["framework","micro","api","router"],
