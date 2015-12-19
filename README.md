@@ -1,4 +1,4 @@
-# Functional Test library
+# FunctionalTester library
 
 This is a library for functional test of PHP legacy products.
 If you have difficulty with testing such products, this library can help you.
