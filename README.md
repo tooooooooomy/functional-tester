@@ -12,9 +12,7 @@ You can set session or include paths used in your target product.
 If you call `request` method like http request, you can get a parsed response instance of `Guzzle\Http\Message\Response`
 
 ```php
-<?php
-
-use Test/FunctionalTester;
+use FunctionalTester/FunctionalTester;
 
 class IndexTest extends PHPUnit_Framework_TestCase
 {
