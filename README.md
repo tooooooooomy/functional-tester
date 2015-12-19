@@ -26,7 +26,7 @@ class IndexTest extends PHPUnit_Framework_TestCase
         //add includePath used in your target product.
         $tester->addIncludePath(':/path/to/src');
         
-        //if you can get response like http request if you call get or post method
+        //you can call get or post method like http request
         $response = $tester->get('index.php', ['username' => 'hogehoge']);
         
         //you can assert request results like this.
