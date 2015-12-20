@@ -8,21 +8,18 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase {
 
     use Specify;
 
-    private $tester;
-
     function testSetterAndGetter()
     {
-        $this->tester = new FunctionalTester();
-
         $this->specify('When Set Content-Type', function () {
-            $this->tester->setEnv(["Content-Type" => "application/x-www-form-urlencoded"]);
+            $tester = new FunctionalTester();
+            $tester->setEnv(["Content-Type" => "application/x-www-form-urlencoded"]);
 
-            $this->assertEquals($this->tester->getEnv(), [
+            $this->assertEquals($tester->getEnv(), [
                 "Content-Type" => "application/x-www-form-urlencoded"
             ]);
 
-            $this->specify('When getter specify option name', function () {
-                $this->assertEquals($this->tester->getEnv(['Content-Type']), [
+            $this->specify('When getter specify option name', function () use ($tester) {
+                $this->assertEquals($tester->getEnv(['Content-Type']), [
                     "Content-Type" => "application/x-www-form-urlencoded"
                 ]);
             });
