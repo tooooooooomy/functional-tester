@@ -4,7 +4,8 @@ namespace Tests\FunctionalTester;
 use FunctionalTester\FunctionalTester;
 use Codeception\Specify;
 
-class FunctionalTesterTest extends \PHPUnit_Framework_TestCase {
+class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
+{
 
     use Specify;
 
@@ -35,7 +36,7 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase {
             $tester = new FunctionalTester();
             $tester->setSession(['test' => 'hoge']);
 
-            $this->assertEquals($_SESSION,[
+            $this->assertEquals($_SESSION, [
                 "test" => "hoge"
             ]);
         });
@@ -73,27 +74,27 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase {
                 'CONTENT_LENGTH' => 100,
             ]);
 
-            $this->assertEquals($tester->makeEnvString(),"REQUEST_METHOD='GET' CONTENT_LENGTH='100'");
+            $this->assertEquals($tester->makeEnvString(), "REQUEST_METHOD='GET' CONTENT_LENGTH='100'");
         });
     }
 
     function testGet()
     {
 
-        $tester = new FunctionalTester( __DIR__ . '/data/');
+        $tester = new FunctionalTester(__DIR__ . '/data/');
 
-        $this->specify('When request param is test=hogehoge', function () use($tester) {
+        $this->specify('When request param is test=hogehoge', function () use ($tester) {
             $response = $tester->get('index.php', ['test' => 'hogehoge']);
             $this->assertEquals(json_decode($response->getBody(), true)['get'], ['test' => 'hogehoge']);
         });
 
-        $this->specify('session is test=hogehoge', function () use($tester) {
+        $this->specify('session is test=hogehoge', function () use ($tester) {
             $tester->setSession(['test' => 'hogehoge']);
             $response = $tester->get('index.php');
             $this->assertEquals(json_decode($response->getBody(), true)['session'], ['test' => 'hogehoge']);
         });
 
-        $this->specify('session and get parameters are specified', function () use($tester) {
+        $this->specify('session and get parameters are specified', function () use ($tester) {
             $tester->setSession(['test' => 'hogehoge']);
             $response = $tester->get('index.php', ['test' => 'hogehoge']);
             $this->assertEquals(json_decode($response->getBody(), true)['session'], ['test' => 'hogehoge']);
@@ -103,20 +104,20 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase {
 
     function testPost()
     {
-        $tester = new FunctionalTester( __DIR__ . '/data/');
+        $tester = new FunctionalTester(__DIR__ . '/data/');
 
-        $this->specify('When request param is test=hogehoge', function () use($tester) {
+        $this->specify('When request param is test=hogehoge', function () use ($tester) {
             $response = $tester->post('index.php', ['test' => 'hogehoge']);
             $this->assertEquals(json_decode($response->getBody(), true)['post'], ['test' => 'hogehoge']);
         });
 
-        $this->specify('session is test=hogehoge', function () use($tester) {
+        $this->specify('session is test=hogehoge', function () use ($tester) {
             $tester->setSession(['test' => 'hogehoge']);
             $response = $tester->post('index.php');
             $this->assertEquals(json_decode($response->getBody(), true)['session'], ['test' => 'hogehoge']);
         });
 
-        $this->specify('session and post parameters are specified', function () use($tester) {
+        $this->specify('session and post parameters are specified', function () use ($tester) {
             $tester->setSession(['test' => 'hogehoge']);
             $response = $tester->post('index.php', ['test' => 'hogehoge']);
             $this->assertEquals(json_decode($response->getBody(), true)['session'], ['test' => 'hogehoge']);
@@ -126,7 +127,7 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase {
 
     function testRequest()
     {
-        $tester = new FunctionalTester( __DIR__ . '/data/');
+        $tester = new FunctionalTester(__DIR__ . '/data/');
         $this->specify('request when multiple session are specified', function () use ($tester) {
             $tester->setSession(['test' => 'hogehoge'], 'test1');
             $tester->setSession(['test' => 'hogehoge'], 'test2');
