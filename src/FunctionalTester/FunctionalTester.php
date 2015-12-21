@@ -20,6 +20,7 @@ class FunctionalTester
         $this->includePath = $includePath;
         $this->phpOptions = [ //default options
             'display_errors' => 0,
+            'error_reporting' => 0,
         ];
     }
 
