@@ -26,7 +26,10 @@ class IndexTest extends PHPUnit_Framework_TestCase
         //set your document root. you can also set as constructer 1st argument.
         $tester->setDocumentRoot('/path/to/src');
         
-        //add include path used in your target product. you can also set as constructer 2st argument.
+        //set include path used in your target product. you can also set as constructer 2st argument.
+        $tester->setIncludePath('.:/usr/bin/php');
+
+        //you can also add
         $tester->addIncludePath(':/path/to/src');
         
         //you can call get or post method like http request

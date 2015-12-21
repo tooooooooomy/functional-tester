@@ -8,6 +8,7 @@ class FunctionalTester
     protected $env = [];
     protected $documentRoot;
     protected $includePath;
+    protected $phpOptions;
 
     /**
      * @param string $documentRoot
@@ -17,6 +18,9 @@ class FunctionalTester
     {
         $this->documentRoot = $documentRoot;
         $this->includePath = $includePath;
+        $this->phpOptions = [ //default options
+            'display_errors' => 0,
+        ];
     }
 
     public function getIncludePath()
@@ -44,6 +48,16 @@ class FunctionalTester
         $this->includePath .= $path;
     }
 
+    public function setPhpOptions($options)
+    {
+        $this->phpOptions = $options;
+    }
+
+    public function getPhpOptions()
+    {
+        return $this->phpOptions;
+    }
+
     /**
      * @param $method
      * @param $file
@@ -69,7 +83,8 @@ class FunctionalTester
         }
 
         $envStr = $this->makeEnvString();
-        $response = $this->send($paramStr, $envStr);
+        $phpOptionsStr = $this->makePhpOptionsString();
+        $response = $this->send($paramStr, $envStr, $phpOptionsStr);
         $adjustedResponse = $this->setHttpProtocolToResponse($response);
 
         return $this->parseResponse($adjustedResponse);
@@ -80,9 +95,9 @@ class FunctionalTester
      * @param $envStr
      * @return string
      */
-    public function send($paramStr, $envStr)
+    public function send($paramStr, $envStr, $phpOptionsStr)
     {
-        return shell_exec("echo '$paramStr' | env $envStr php-cgi -d include_path=$this->includePath");
+        return shell_exec("echo '$paramStr' | env $envStr php-cgi -d include_path=$this->includePath $phpOptionsStr");
     }
 
     /**
@@ -204,5 +219,15 @@ class FunctionalTester
         session_name($name);
         session_start();
         session_destroy();
+    }
+
+    public function makePhpOptionsString()
+    {
+        $array = [];
+        foreach ($this->phpOptions as $key => $value) {
+            array_push($array, "-d $key='$value'");
+        }
+
+        return implode(' ', $array);
     }
 }
