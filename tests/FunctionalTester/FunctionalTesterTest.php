@@ -166,7 +166,7 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
                 'display_errors' => 0,
                 'memory_limit' => 10000,
             ]);
-            $this->assertEquals($tester->makePhpOptionsString(), "-d display_errors='0' -d memoly_limit='10000'");
+            $this->assertEquals($tester->makePhpOptionsString(), "-d display_errors='0' -d memory_limit='10000'");
         });
     }
 }
