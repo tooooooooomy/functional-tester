@@ -158,7 +158,7 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
         $tester = new FunctionalTester();
 
         $this->specify('When default', function () use ($tester) {
-            $this->assertEquals($tester->makePhpOptionsString(), "-d display_errors=0");
+            $this->assertEquals($tester->makePhpOptionsString(), "-d display_errors='0'");
         });
 
         $this->specify('When set multiple options', function () use ($tester) {
@@ -166,7 +166,7 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
                 'display_errors' => 0,
                 'memory_limit' => 10000,
             ]);
-            $this->assertEquals($tester->makePhpOptionsString(), "-d display_errors=0 -d memoly_limit=10000");
+            $this->assertEquals($tester->makePhpOptionsString(), "-d display_errors='0' -d memoly_limit='10000'");
         });
     }
 }
