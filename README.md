@@ -1,36 +1,52 @@
 # FunctionalTester library
 
-This is a library for functional test of PHP legacy products.
+This is a library for functional test of PHP legacy products.  
 If you have difficulty with testing such products, this library can help you.
 
 ## Usage
 
 First, create a new "FunctionalTester" instance.
 
-You can set session or include paths used in your target product.
+You can set session, document root and include paths used in your target product.
 
 If you call `request` method like http request, you can get a parsed response instance of `Guzzle\Http\Message\Response`
 
 ```php
-use Test/FunctionalTester;
+use FunctionalTester/FunctionalTester;
 
-$tester = new FunctionalTester();
+class IndexTest extends PHPUnit_Framework_TestCase
+{
+    public function testIndex
+    {
+        $tester = new FunctionalTester();
+        
+        //set session used in your target product.
+        $tester->setSession(['id' => 'hogehoge']);
+        
+        //set your document root. you can also set as constructer 1st argument.
+        $tester->setDocumentRoot('/path/to/src');
+        
+        //add include path used in your target product. you can also set as constructer 2st argument.
+        $tester->addIncludePath(':/path/to/src');
+        
+        //you can call get or post method like http request
+        $response = $tester->get('index.php', ['username' => 'hogehoge']);
+        
+        //you can assert request results like this.
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('OK', $response->getBody());
+    }
+}
+```
+## Installation
 
-//set session used in your target product.
-$tester->setSession(['id' => 'hogehoge']);
+You can install this library through  [Composer](https://getcomposer.org/) .
 
-//add includePath used in your target product.
-$tester->addIncludePath(':/path/to/src');
-
-//if you can get response like http request if you call get or post method
-$response = $tester->get('index.php', ['username' => 'hogehoge']);
-
-//you can assert request results like this
-$this->assertEquals(200, $response->getStatusCode());
-$this->assertEquals('OK', $response->getBody());
-
+```bash
+$ composer require kazu9su/functional-tester
 ```
 
+This will install FunctionalTester and all required dependencies.
 
 ## Tests
 
