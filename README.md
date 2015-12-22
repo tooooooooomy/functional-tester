@@ -1,5 +1,7 @@
 # FunctionalTester library
 
+[![Build Status](https://travis-ci.org/kazu9su/functional-tester.svg?branch=master)](https://travis-ci.org/kazu9su/functional-tester)
+
 This is a library for functional test of PHP legacy products.  
 If you have difficulty with testing such products, this library can help you.
 
