@@ -8,7 +8,7 @@ class FunctionalTester
     protected $env = [];
     protected $documentRoot;
     protected $includePath;
-    protected $phpOptions;
+    protected $phpOptions = [];
 
     /**
      * @param string $documentRoot
@@ -18,10 +18,6 @@ class FunctionalTester
     {
         $this->documentRoot = $documentRoot;
         $this->includePath = $includePath;
-        $this->phpOptions = [ //default options
-            'display_errors' => 0,
-            'error_reporting' => 0,
-        ];
     }
 
     public function getIncludePath()
