@@ -158,7 +158,7 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
         $tester = new FunctionalTester();
 
         $this->specify('When default', function () use ($tester) {
-            $this->assertEquals($tester->makePhpOptionsString(), "-d display_errors='0' -d error_reporting='0'");
+            $this->assertEquals($tester->makePhpOptionsString(), "");
         });
 
         $this->specify('When set multiple options', function () use ($tester) {
