@@ -311,7 +311,7 @@ EOI;
                 $string .= <<<EOI
 --$this->boundary
 Content-Disposition: form-data; name="$name"; filename="$filename"
-Content-type: $type
+Content-Type: $type
 $contents
 
 EOI;
