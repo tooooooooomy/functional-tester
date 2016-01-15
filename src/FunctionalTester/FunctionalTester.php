@@ -9,6 +9,7 @@ class FunctionalTester
     protected $documentRoot;
     protected $includePath;
     protected $phpOptions = [];
+    protected $boundary = 'Boundary';
 
     /**
      * @param string $documentRoot
@@ -57,17 +58,17 @@ class FunctionalTester
 
     /**
      * @param $method
-     * @param $file
+     * @param $scriptFile
      * @param null $parameters
      * @param null $options
      * @return bool|Response
      */
-    public function request($method, $file, $parameters = null, $options = null)
+    public function request($method, $scriptFile, $parameters = null, $options = null)
     {
         $paramStr = ($parameters) ? http_build_query($parameters) : "";
 
         $defaultOptions = [
-            'SCRIPT_FILENAME' => $this->documentRoot . $file,
+            'SCRIPT_FILENAME' => $this->documentRoot . $scriptFile,
             'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
             'REQUEST_METHOD' => $method,
             'CONTENT_LENGTH' => strlen($paramStr),
@@ -98,29 +99,29 @@ class FunctionalTester
     }
 
     /**
-     * @param $file
+     * @param $scriptFile
      * @param null $parameters
      * @param null $options
      * @return bool|Response
      */
-    public function get($file, $parameters = null, $options = null)
+    public function get($scriptFile, $parameters = null, $options = null)
     {
         if ($parameters) {
             $this->env['QUERY_STRING'] = http_build_query($parameters);
         }
 
-        return $this->request('GET', $file, $parameters, $options);
+        return $this->request('GET', $scriptFile, $parameters, $options);
     }
 
     /**
-     * @param $file
+     * @param $scriptFile
      * @param null $parameters
      * @param null $options
      * @return bool|Response
      */
-    public function post($file, $parameters = null, $options = null)
+    public function post($scriptFile, $parameters = null, $options = null)
     {
-        return $this->request('POST', $file, $parameters, $options);
+        return $this->request('POST', $scriptFile, $parameters, $options);
     }
 
     /**
@@ -226,5 +227,43 @@ class FunctionalTester
         }
 
         return implode(' ', $array);
+    }
+
+    /**
+     * @param array $parameters
+     * @param array $files
+     * @return string
+     */
+    public function generateStringForMultiPart($parameters=array(), $files=array())
+    {
+        $string = '';
+        foreach ($parameters as $key => $value) {
+            $string .= <<<EOI
+--$this->boundary
+Content-Disposition: form-data; name="$key"
+
+$value
+
+EOI;
+        }
+
+        foreach ($files as $file) {
+            $name = $file['name'];
+            $filename = $file['filename'];
+            $contents = $file['contents'];
+            $string .= <<<EOI
+--$this->boundary
+Content-Disposition: form-data; name="$name"; filename="$filename"
+
+$contents
+
+EOI;
+        }
+
+        if ($string != '') {
+            $string .="--$this->boundary--";
+        }
+
+        return $string;
     }
 }

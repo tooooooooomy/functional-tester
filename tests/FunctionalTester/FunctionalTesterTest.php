@@ -169,4 +169,34 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($tester->makePhpOptionsString(), "-d display_errors='0' -d memory_limit='10000'");
         });
     }
+
+    function testGenerateStringForMultiPart()
+    {
+        $tester = new FunctionalTester();
+
+        $expected = <<<EOI
+--Boundary
+Content-Disposition: form-data; name="id"
+
+hoge
+--Boundary
+Content-Disposition: form-data; name="hogehoge"; filename="test.txt"
+
+hogehoge
+--Boundary--
+EOI;
+
+        $this->assertEquals($expected, $tester->generateStringForMultiPart(
+            [
+                'id'=> 'hoge'
+            ],
+            [
+                [
+                    'name' => 'hogehoge',
+                    'filename' => 'test.txt',
+                    'contents' => 'hogehoge'
+                ]
+            ])
+        );
+    }
 }
