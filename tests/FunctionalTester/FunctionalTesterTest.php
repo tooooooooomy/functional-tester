@@ -120,6 +120,23 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(json_decode($response->getBody(), true)['session'], ['test' => 'hogehoge']);
             $this->assertEquals(json_decode($response->getBody(), true)['post'], ['test' => 'hogehoge']);
         });
+
+        $this->specify('when upload files', function () use ($tester) {
+            $response = $tester->post('fileupload.php',
+                [
+                    'test' => 'hogehoge'
+                ],
+                [],
+                [
+                    [
+                        'name' => 'test',
+                        'filename' => 'test.txt',
+                        'contents' => 'hogehoge',
+                    ],
+                ]);
+            $this->assertEquals(json_decode($response->getBody(), true)['files']['test']['name'], 'test.txt');
+            $this->assertEquals(json_decode($response->getBody(), true)['post'], ['test' => 'hogehoge']);
+        });
     }
 
     function testRequest()
@@ -168,5 +185,35 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
             ]);
             $this->assertEquals($tester->makePhpOptionsString(), "-d display_errors='0' -d memory_limit='10000'");
         });
+    }
+
+    function testGenerateStringForMultiPart()
+    {
+        $tester = new FunctionalTester();
+
+        $expected = <<<EOI
+--Boundary
+Content-Disposition: form-data; name="id"
+
+hoge
+--Boundary
+Content-Disposition: form-data; name="hogehoge"; filename="test.txt"
+
+hogehoge
+--Boundary--
+EOI;
+
+        $this->assertEquals($expected, $tester->generateStringForMultiPart(
+            [
+                'id'=> 'hoge'
+            ],
+            [
+                [
+                    'name' => 'hogehoge',
+                    'filename' => 'test.txt',
+                    'contents' => 'hogehoge'
+                ]
+            ])
+        );
     }
 }

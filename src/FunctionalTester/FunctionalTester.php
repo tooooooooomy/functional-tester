@@ -5,10 +5,30 @@ use Guzzle\Http\Message\Response;
 
 class FunctionalTester
 {
+    /**
+     * @var array
+     */
     protected $env = [];
+
+    /**
+     * @var string
+     */
     protected $documentRoot;
+
+    /**
+     * @var string
+     */
     protected $includePath;
+
+    /**
+     * @var array
+     */
     protected $phpOptions = [];
+
+    /**
+     * @var string
+     */
+    protected $boundary = 'Boundary';
 
     /**
      * @param string $documentRoot
@@ -20,59 +40,87 @@ class FunctionalTester
         $this->includePath = $includePath;
     }
 
+    /**
+     * @return string
+     */
     public function getIncludePath()
     {
         return $this->includePath;
     }
 
+    /**
+     * @return string
+     */
     public function getDocumentRoot()
     {
         return $this->documentRoot;
     }
 
+    /**
+     * @param string $includePath
+     */
     public function setIncludePath($includePath)
     {
         $this->includePath = $includePath;
     }
 
+    /**
+     * @param string $documentRoot
+     */
     public function setDocumentRoot($documentRoot)
     {
         $this->documentRoot = $documentRoot;
     }
 
+    /**
+     * @param string $path
+     */
     public function addIncludePath($path)
     {
         $this->includePath .= $path;
     }
 
+    /**
+     * @param array $options
+     */
     public function setPhpOptions($options)
     {
         $this->phpOptions = $options;
     }
 
+    /**
+     * @return array
+     */
     public function getPhpOptions()
     {
         return $this->phpOptions;
     }
 
     /**
-     * @param $method
-     * @param $file
-     * @param null $parameters
-     * @param null $options
+     * @param string $method
+     * @param string $scriptFile
+     * @param null|array $parameters
+     * @param null|array $options
+     * @param null $files
      * @return bool|Response
      */
-    public function request($method, $file, $parameters = null, $options = null)
+    public function request($method, $scriptFile, $parameters = null, $options = null, $files = null)
     {
-        $paramStr = ($parameters) ? http_build_query($parameters) : "";
-
         $defaultOptions = [
-            'SCRIPT_FILENAME' => $this->documentRoot . $file,
+            'SCRIPT_FILENAME' => $this->documentRoot . $scriptFile,
             'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
             'REQUEST_METHOD' => $method,
-            'CONTENT_LENGTH' => strlen($paramStr),
             'REDIRECT_STATUS' => 'CGI',
         ];
+
+        if ($files) {
+            $reqBody = $this->generateStringForMultiPart($parameters, $files);
+            $defaultOptions['CONTENT_TYPE'] = 'multipart/form-data; boundary=' . $this->boundary;
+        } else {
+            $reqBody = ($parameters) ? http_build_query($parameters) : "";
+        }
+
+        $defaultOptions['CONTENT_LENGTH'] = strlen($reqBody);
 
         $this->setEnv($defaultOptions);
         if ($options) {
@@ -81,46 +129,47 @@ class FunctionalTester
 
         $envStr = $this->makeEnvString();
         $phpOptionsStr = $this->makePhpOptionsString();
-        $response = $this->send($paramStr, $envStr, $phpOptionsStr);
+        $response = $this->send($reqBody, $envStr, $phpOptionsStr);
         $adjustedResponse = $this->setHttpProtocolToResponse($response);
 
         return $this->parseResponse($adjustedResponse);
     }
 
     /**
-     * @param $paramStr
-     * @param $envStr
+     * @param string $reqBody
+     * @param string $envStr
      * @return string
      */
-    public function send($paramStr, $envStr, $phpOptionsStr)
+    public function send($reqBody, $envStr, $phpOptionsStr)
     {
-        return shell_exec("echo '$paramStr' | env $envStr php-cgi -d include_path=$this->includePath $phpOptionsStr");
+        return shell_exec("echo '$reqBody' | env $envStr php-cgi -d include_path=$this->includePath $phpOptionsStr");
     }
 
     /**
-     * @param $file
-     * @param null $parameters
-     * @param null $options
+     * @param string $scriptFile
+     * @param null|array $parameters
+     * @param null|array $options
      * @return bool|Response
      */
-    public function get($file, $parameters = null, $options = null)
+    public function get($scriptFile, $parameters = null, $options = null)
     {
         if ($parameters) {
             $this->env['QUERY_STRING'] = http_build_query($parameters);
         }
 
-        return $this->request('GET', $file, $parameters, $options);
+        return $this->request('GET', $scriptFile, $parameters, $options);
     }
 
     /**
-     * @param $file
-     * @param null $parameters
-     * @param null $options
+     * @param string $scriptFile
+     * @param null|array $parameters
+     * @param null|array $options
+     * @param null|array $files
      * @return bool|Response
      */
-    public function post($file, $parameters = null, $options = null)
+    public function post($scriptFile, $parameters = null, $options = null, $files= null)
     {
-        return $this->request('POST', $file, $parameters, $options);
+        return $this->request('POST', $scriptFile, $parameters, $options, $files);
     }
 
     /**
@@ -147,7 +196,7 @@ class FunctionalTester
     }
 
     /**
-     * @param null $optionNames
+     * @param null|array $optionNames
      * @return array
      */
     public function getEnv($optionNames = null)
@@ -165,7 +214,7 @@ class FunctionalTester
     }
 
     /**
-     * @param $response
+     * @param string $response
      * @return string
      */
     public function setHttpProtocolToResponse($response)
@@ -178,7 +227,7 @@ class FunctionalTester
     }
 
     /**
-     * @param $response
+     * @param string $response
      * @return bool|Response
      */
     public function parseResponse($response)
@@ -218,6 +267,9 @@ class FunctionalTester
         session_destroy();
     }
 
+    /**
+     * @return string
+     */
     public function makePhpOptionsString()
     {
         $array = [];
@@ -226,5 +278,48 @@ class FunctionalTester
         }
 
         return implode(' ', $array);
+    }
+
+    /**
+     * @param null|array $parameters
+     * @param null|array $files
+     * @return string
+     */
+    public function generateStringForMultiPart($parameters=null, $files=null)
+    {
+        $string = '';
+
+        if ($parameters) {
+            foreach ($parameters as $key => $value) {
+                $string .= <<<EOI
+--$this->boundary
+Content-Disposition: form-data; name="$key"
+
+$value
+
+EOI;
+            }
+        }
+
+        if ($files) {
+            foreach ($files as $file) {
+                $name = $file['name'];
+                $filename = $file['filename'];
+                $contents = $file['contents'];
+                $string .= <<<EOI
+--$this->boundary
+Content-Disposition: form-data; name="$name"; filename="$filename"
+
+$contents
+
+EOI;
+            }
+        }
+
+        if ($string != '') {
+            $string .="--$this->boundary--";
+        }
+
+        return $string;
     }
 }
