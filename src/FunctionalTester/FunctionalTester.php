@@ -306,10 +306,12 @@ EOI;
                 $name = $file['name'];
                 $filename = $file['filename'];
                 $contents = $file['contents'];
+                $type     = $file['type'];
+
                 $string .= <<<EOI
 --$this->boundary
 Content-Disposition: form-data; name="$name"; filename="$filename"
-
+Content-type: $type
 $contents
 
 EOI;

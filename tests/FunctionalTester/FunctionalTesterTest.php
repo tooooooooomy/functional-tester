@@ -198,7 +198,7 @@ Content-Disposition: form-data; name="id"
 hoge
 --Boundary
 Content-Disposition: form-data; name="hogehoge"; filename="test.txt"
-
+Content-type: text/plain
 hogehoge
 --Boundary--
 EOI;
@@ -211,7 +211,8 @@ EOI;
                 [
                     'name' => 'hogehoge',
                     'filename' => 'test.txt',
-                    'contents' => 'hogehoge'
+                    'contents' => 'hogehoge',
+                    'type' => 'text/plain',
                 ]
             ])
         );
