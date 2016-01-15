@@ -142,7 +142,12 @@ class FunctionalTester
      */
     public function send($reqBody, $envStr, $phpOptionsStr)
     {
-        return shell_exec("echo '$reqBody' | env $envStr php-cgi -d include_path=$this->includePath $phpOptionsStr");
+        $tmpFileName = tempnam('/tmp', 'prefix');
+        file_put_contents($tmpFileName, $reqBody);
+        $result =  shell_exec("cat $tmpFileName | env $envStr php-cgi -d include_path=$this->includePath $phpOptionsStr");
+        unlink($tmpFileName);
+
+        return $result;
     }
 
     /**
