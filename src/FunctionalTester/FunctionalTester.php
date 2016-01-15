@@ -312,6 +312,7 @@ EOI;
 --$this->boundary
 Content-Disposition: form-data; name="$name"; filename="$filename"
 Content-Type: $type
+
 $contents
 
 EOI;

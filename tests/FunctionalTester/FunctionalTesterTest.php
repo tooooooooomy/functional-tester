@@ -132,6 +132,7 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
                         'name' => 'test',
                         'filename' => 'test.txt',
                         'contents' => 'hogehoge',
+                        'type' => 'text/plain',
                     ],
                 ]);
             $this->assertEquals(json_decode($response->getBody(), true)['files']['test']['name'], 'test.txt');
@@ -199,6 +200,7 @@ hoge
 --Boundary
 Content-Disposition: form-data; name="hogehoge"; filename="test.txt"
 Content-Type: text/plain
+
 hogehoge
 --Boundary--
 EOI;
