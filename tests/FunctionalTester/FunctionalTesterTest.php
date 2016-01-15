@@ -120,6 +120,23 @@ class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(json_decode($response->getBody(), true)['session'], ['test' => 'hogehoge']);
             $this->assertEquals(json_decode($response->getBody(), true)['post'], ['test' => 'hogehoge']);
         });
+
+        $this->specify('when upload files', function () use ($tester) {
+            $response = $tester->post('fileupload.php',
+                [
+                    'test' => 'hogehoge'
+                ],
+                [],
+                [
+                    [
+                        'name' => 'test',
+                        'filename' => 'test.txt',
+                        'contents' => 'hogehoge',
+                    ],
+                ]);
+            $this->assertEquals(json_decode($response->getBody(), true)['files']['test']['name'], 'test.txt');
+            $this->assertEquals(json_decode($response->getBody(), true)['post'], ['test' => 'hogehoge']);
+        });
     }
 
     function testRequest()
