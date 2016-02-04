@@ -216,4 +216,25 @@ EOI;
             ])
         );
     }
+
+    function test_bootstrap()
+    {
+        $this->specify('can call undefined function apache_note', function () {
+            $tester = new FunctionalTester(__DIR__ . '/data/');
+
+            $response = $tester->get('bootstrap_test.php');
+            $this->assertEquals([false], json_decode($response->getBody(true), true));
+        });
+    }
+
+    function test_generateExecFile()
+    {
+        $tester = new FunctionalTester(__DIR__ . '/data/');
+
+        $execFile = $tester->generateExecFile('bootstrap_test.php');
+
+        $this->assertTrue(file_exists($execFile));
+
+        unlink($execFile);
+    }
 }

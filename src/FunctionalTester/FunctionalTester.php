@@ -289,10 +289,15 @@ class FunctionalTester
         return implode(' ', $array);
     }
 
+    /**
+     * @param $scriptFile
+     * @return string
+     */
     public function generateExecFile($scriptFile)
     {
-        $execFileName = tempnam('/tmp', 'prefix');
-        shell_exec("cat ./bootstrap.php $this->documentRoot$scriptFile > $execFileName");
+        $execFileName = tempnam(__DIR__ . '/tmp', 'prefix');
+        $bootstrap = __DIR__ . "/bootstrap.php";
+        shell_exec("cat $bootstrap $this->documentRoot$scriptFile > $execFileName");
 
         return $execFileName;
     }
