@@ -1,14 +1,11 @@
 <?php
 namespace Tests\FunctionalTester;
 
+use Tests\lib\TestCase;
 use FunctionalTester\FunctionalTester;
-use Codeception\Specify;
 
-class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
+class FunctionalTesterTest extends TestCase
 {
-
-    use Specify;
-
     function testSetterAndGetter()
     {
         $this->specify('When Set Content-Type', function () {
