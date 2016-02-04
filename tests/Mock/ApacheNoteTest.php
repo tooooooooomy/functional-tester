@@ -42,7 +42,15 @@ class ApacheNoteTest extends TestCase
             $this->assertEquals('hogehoge', $instance->setNote('hoge', 'hogefuga'));
             $this->assertEquals('hogefuga', $instance->getNote('hoge'));
         });
-
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function test_clone ()
+    {
+        $instance1 = ApacheNote::getInstance();
+
+        $instance2 = clone $instance1;
+    }
 }
