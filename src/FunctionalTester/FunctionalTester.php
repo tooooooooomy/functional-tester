@@ -146,7 +146,7 @@ class FunctionalTester
      */
     public function send($reqBody, $envStr, $phpOptionsStr)
     {
-        $tmpFileName = tempnam('/tmp', 'prefix');
+        $tmpFileName = tempnam(__DIR__ . '/tmp', 'prefix');
         file_put_contents($tmpFileName, $reqBody);
         $result =  shell_exec("cat $tmpFileName | env $envStr php-cgi -d include_path=$this->includePath $phpOptionsStr");
         unlink($tmpFileName);
