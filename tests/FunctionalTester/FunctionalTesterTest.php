@@ -237,4 +237,18 @@ EOI;
 
         unlink($execFile);
     }
+
+    function test_generateMockFilesStr()
+    {
+        $tester = new FunctionalTester();
+
+        $files = explode(' ', $tester->generateMockFilesStr());
+
+        foreach ($files as $file) {
+            $cmd = 'php -l ' . $file.' >/dev/null 2>&1';
+            exec($cmd, $output, $return_var);
+
+            $this->assertEquals($return_var, 0);
+        }
+    }
 }

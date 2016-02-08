@@ -1,7 +1,9 @@
 <?php
-namespace Tests\Mock;
+namespace Tests\FunctionalTester\Mock;
 
-use Mock\ApacheNote;
+require_once __DIR__ . "/../../../src/FunctionalTester/Mock/ApacheNote.php";
+
+use ApacheNote;
 use Tests\lib\TestCase;
 
 class ApacheNoteTest extends TestCase
