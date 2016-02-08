@@ -15,7 +15,9 @@
     },
     "autoload": {
         "psr-4": {
-            "FunctionalTester\\": "src/FunctionalTester"
+            "FunctionalTester\\": "src/FunctionalTester",
+            "Mock\\": "src/Mock",
+            "Tests\\": "tests"
         }
     }
 }

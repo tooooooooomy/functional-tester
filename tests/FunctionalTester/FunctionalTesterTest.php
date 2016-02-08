@@ -1,14 +1,11 @@
 <?php
 namespace Tests\FunctionalTester;
 
+use Tests\lib\TestCase;
 use FunctionalTester\FunctionalTester;
-use Codeception\Specify;
 
-class FunctionalTesterTest extends \PHPUnit_Framework_TestCase
+class FunctionalTesterTest extends TestCase
 {
-
-    use Specify;
-
     function testSetterAndGetter()
     {
         $this->specify('When Set Content-Type', function () {
@@ -218,5 +215,26 @@ EOI;
                 ]
             ])
         );
+    }
+
+    function test_bootstrap()
+    {
+        $this->specify('can call undefined function apache_note', function () {
+            $tester = new FunctionalTester(__DIR__ . '/data/');
+
+            $response = $tester->get('bootstrap_test.php');
+            $this->assertEquals([false], json_decode($response->getBody(true), true));
+        });
+    }
+
+    function test_generateExecFile()
+    {
+        $tester = new FunctionalTester(__DIR__ . '/data/');
+
+        $execFile = $tester->generateExecFile('bootstrap_test.php');
+
+        $this->assertTrue(file_exists($execFile));
+
+        unlink($execFile);
     }
 }

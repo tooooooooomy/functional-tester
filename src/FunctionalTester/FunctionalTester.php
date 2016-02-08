@@ -106,8 +106,10 @@ class FunctionalTester
      */
     public function request($method, $scriptFile, $parameters = null, $options = null, $files = null)
     {
+        $execFile = $this->generateExecFile($scriptFile);
+
         $defaultOptions = [
-            'SCRIPT_FILENAME' => $this->documentRoot . $scriptFile,
+            'SCRIPT_FILENAME' => $execFile,
             'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
             'REQUEST_METHOD' => $method,
             'REDIRECT_STATUS' => 'CGI',
@@ -132,6 +134,8 @@ class FunctionalTester
         $response = $this->send($reqBody, $envStr, $phpOptionsStr);
         $adjustedResponse = $this->setHttpProtocolToResponse($response);
 
+        unlink($execFile);
+
         return $this->parseResponse($adjustedResponse);
     }
 
@@ -142,7 +146,7 @@ class FunctionalTester
      */
     public function send($reqBody, $envStr, $phpOptionsStr)
     {
-        $tmpFileName = tempnam('/tmp', 'prefix');
+        $tmpFileName = tempnam(__DIR__ . '/tmp', 'prefix');
         file_put_contents($tmpFileName, $reqBody);
         $result =  shell_exec("cat $tmpFileName | env $envStr php-cgi -d include_path=$this->includePath $phpOptionsStr");
         unlink($tmpFileName);
@@ -283,6 +287,19 @@ class FunctionalTester
         }
 
         return implode(' ', $array);
+    }
+
+    /**
+     * @param $scriptFile
+     * @return string
+     */
+    public function generateExecFile($scriptFile)
+    {
+        $execFileName = tempnam(__DIR__ . '/tmp', 'prefix');
+        $bootstrap = __DIR__ . "/bootstrap.php";
+        shell_exec("cat $bootstrap $this->documentRoot$scriptFile > $execFileName");
+
+        return $execFileName;
     }
 
     /**
