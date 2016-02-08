@@ -295,11 +295,29 @@ class FunctionalTester
      */
     public function generateExecFile($scriptFile)
     {
-        $execFileName = tempnam(__DIR__ . '/tmp', 'prefix');
+        $execFileName = tempnam(dirname($this->documentRoot . $scriptFile), 'prefix');
+        $mockFileStr = $this->generateMockFilesStr();
         $bootstrap = __DIR__ . "/bootstrap.php";
-        shell_exec("cat $bootstrap $this->documentRoot$scriptFile > $execFileName");
+        shell_exec("cat $mockFileStr $bootstrap $this->documentRoot$scriptFile > $execFileName");
 
         return $execFileName;
+    }
+
+    /**
+     * @return string
+     */
+    public function generateMockFilesStr()
+    {
+        $files = scandir(__DIR__ . '/Mock');
+
+        unset($files[0]); //'.'
+        unset($files[1]); //'..'
+        $dir_added_files = [];
+        foreach ($files as $file) {
+            $dir_added_files[] = __DIR__ . '/Mock/' . $file;
+        }
+
+        return implode(' ', $dir_added_files);
     }
 
     /**

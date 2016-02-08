@@ -1,6 +1,9 @@
 <?php
-namespace Mock;
 
+/**
+ * Does not use namespace
+ * Class ApacheNote
+ */
 class ApacheNote
 {
     /**
@@ -52,3 +55,5 @@ class ApacheNote
     }
 
 }
+
+?>
