@@ -13,4 +13,3 @@ function apache_note($note_name, $note_value=null)
 }
 
 ?>
-
