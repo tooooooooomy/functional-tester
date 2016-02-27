@@ -1,8 +1,6 @@
 <?php
 namespace FunctionalTester;
 
-use Guzzle\Http\Message\Response;
-
 class FunctionalTester
 {
     /**
