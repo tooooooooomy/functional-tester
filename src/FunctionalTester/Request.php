@@ -188,7 +188,7 @@ END;
 
         // Non-zero exit status => 500 Internal Server Error
         if ($ret) {
-            throw new Exception($stderr);
+            throw new \Exception($stderr);
         }
 
         return self::makeFakeResponse($stdout);
