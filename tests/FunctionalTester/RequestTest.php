@@ -36,7 +36,51 @@ class RequestTest extends TestCase
         );
     }
 
-    function test_makeFakeRequest_succeeds()
+    function test_buildMultipartBody()
+    {
+        $body = Request::buildMultipartBody(
+            [   'hoge' => 'hoge hoge',
+                'fuga' => 'fuga fuga'
+            ],
+            [   'file1' => [
+                    'name' => 'hoge.txt',
+                    'type' => 'text/plain',
+                    'content' => 'AABBCC',
+                ],
+                'file2' => 'tests/apps/file.txt',
+            ]
+        );
+
+        $this->assertEquals(<<<END
+--xYzZY
+Content-Disposition: form-data; name="hoge"
+
+hoge hoge
+--xYzZY
+Content-Disposition: form-data; name="fuga"
+
+fuga fuga
+--xYzZY
+Content-Disposition: form-data; name="file1"; filename="hoge.txt"
+Content-Type: text/plain
+
+AABBCC
+--xYzZY
+Content-Disposition: form-data; name="file2"; filename="file.txt"
+Content-Type: text/plain
+
+AAAAAAAA
+BBBBBB
+CCCC
+DD
+
+--xYzZY--
+END
+            , $body
+        );
+    }
+
+    function test_simple_makeFakeRequest_succeeds()
     {
         list($ret, $stdout, $stderr) = Request::makeFakeRequest(
             [   'REQUEST_METHOD'  => 'POST',
@@ -52,7 +96,7 @@ class RequestTest extends TestCase
         preg_match('/\r\n\r\n(.+)$/', $stdout, $matches);
         $data = json_decode($matches[1], true);
 
-        $this->assertEquals($data, [
+        $this->assertEquals([
             'GET' => [
                 'aaa' => 'aaa',
                 'bbb' => 'bbb',
@@ -61,7 +105,66 @@ class RequestTest extends TestCase
                 'hello' => 'world',
                 'bye'   => 'world',
             ],
-        ]);
+            'FILES' => [],
+        ], $data);
+        $this->assertEquals('', $stderr);
+    }
+
+    function test_complex_makeFakeRequest_succeeds()
+    {
+        list($ret, $stdout, $stderr) = Request::makeFakeRequest(
+            [   'REQUEST_METHOD'  => 'POST',
+                'SCRIPT_FILENAME' => 'tests/apps/respond.php',
+                'QUERY_STRING'    => 'aaa=aaa&bbb=bbb',
+                'CONTENT_TYPE'    => 'multipart/form-data; boundary=xYzZY',
+            ],
+            <<<END
+--xYzZY
+Content-Disposition: form-data; name="fuga"
+
+fuga fuga
+--xYzZY
+Content-Disposition: form-data; name="hoge"
+
+hoge hoge
+--xYzZY
+Content-Disposition: form-data; name="text_file"; filename="file.txt"
+Content-Type: text/plain
+
+abcdefg
+--xYzZY--
+END
+        );
+
+        $this->assertEquals(0, $ret);
+
+        preg_match('/\r\n\r\n(.+)$/', $stdout, $matches);
+        $data = json_decode($matches[1], true);
+
+        $text_file_tmp_name = $data['FILES']['text_file']['tmp_name'];
+        unset($data['FILES']['text_file']['tmp_name']);
+
+        $this->assertEquals([
+            'GET' => [
+                'aaa' => 'aaa',
+                'bbb' => 'bbb',
+            ],
+            'POST' => [
+                'hoge' => 'hoge hoge',
+                'fuga' => 'fuga fuga',
+            ],
+            'FILES' => [
+                'text_file' => [
+                    'name' => 'file.txt',
+                    'type' => 'text/plain',
+                    'size' => 7,
+                    'error' => 0,
+                ]
+            ],
+        ], $data);
+
+        $this->assertRegExp('/\/tmp\//', $text_file_tmp_name);
+
         $this->assertEquals('', $stderr);
     }
 
@@ -152,10 +255,26 @@ class RequestTest extends TestCase
         );
     }
 
-    function get_send_GET_request()
+    function test_send_GET_request()
     {
-        $req = new Request('GET', 'tests/apps/get.php?hoge=fuga&fuga=hoge');
+        $req = new Request(
+            'POST',
+            'tests/apps/respond.php?a=a&b=b&c=c',
+            [   'hoge' => 'hoge',
+                'fuga' => 'fuga'
+            ],
+            [   'X-HOGE-FUGA' => 'hogehoge-fugafuga'
+            ],
+            [   'file1' => ['name' => 'file1.txt', 'type' => 'text/plain', 'content' => 'あああ'],
+                'file2' => 'tests/apps/file.txt.zip'
+            ]
+        );
 
-        $res = $req->send();
+        //XXX TODO: rename or get Guzzle response
+        list($ret, $out, $err) = $req->request();
+
+        //var_dump($ret);
+        //var_dump($out);
+        //var_dump($err);
     }
 }

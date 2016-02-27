@@ -3,6 +3,8 @@ namespace FunctionalTester;
 
 class Request
 {
+    const BOUNDARY = 'xYzZY';
+
     private
         $method,
         $query_string,
@@ -37,51 +39,51 @@ class Request
         return strtoupper(str_replace('-', '_', $name));
     }
 
-    public function __construct($method, $exec_file_path, $form = [], $headers = [], $files = [])
+    public static function buildMultipartBody($form, $files)
     {
-        $this->method = $method;
-        $this->form   = $form;
-        $this->files  = $files;
+        $body = '';
+        $boundary = self::BOUNDARY;
 
-        list($this->exec_file_path, $this->query_string)
-            = self::parseFilePath($exec_file_path);
+        foreach ($form as $k => $v) {
+            $body .= <<<END
+--{$boundary}
+Content-Disposition: form-data; name="{$k}"
 
-        $this->headers = [];
-        foreach ($headers as $k => $v) {
-            $this->headers[self::normalizeHeaderName($k)] = $v;
+{$v}
+
+END;
         }
 
-        $this->body = '';
+        foreach ($files as $k => $file) {
 
-        $this->initialize();
-    }
+            if (is_array($file)) {
+                $body .= <<<END
+--{$boundary}
+Content-Disposition: form-data; name="{$k}"; filename="{$file['name']}"
+Content-Type: {$file['type']}
 
-    private function initialize()
-    {
-        if (sizeof($this->form)) {
-            $this->headers[self::normalizeHeaderName('content-type')] = 'application/x-www-form-urlencoded';
+{$file['content']}
+
+END;
+            } elseif (is_string($file)) {
+                $name    = basename($file);
+                $type    = mime_content_type($file);
+                $content = file_get_contents($file);
+
+                $body .= <<<END
+--{$boundary}
+Content-Disposition: form-data; name="{$k}"; filename="{$name}"
+Content-Type: {$type}
+
+{$content}
+
+END;
+            }
         }
 
-        // TODO: Make this request "multipart/form-data" if files are given
-    }
+        $body .= "--{$boundary}--";
 
-    public function request()
-    {
-        $env = [
-            'REQUEST_METHOD'  => $this->method,
-            'SCRIPT_FILENAME' => $this->exec_file_path,
-            'QUERY_STRING'    => $this->query_string,
-        ];
-
-        foreach ($this->headers as $k => $v) {
-            $env[$k] = $v;
-        }
-
-        //TODO: Prepare executing file by merging bootstrap?
-
-        list($ret, $stdout, $stderr) = $this->makeFakeRequest($env, $this->body);
-
-        //TODO: Do something with result
+        return $body;
     }
 
     public static function makeFakeRequest($env, $body)
@@ -116,5 +118,63 @@ class Request
         }
 
         return [$ret, $raw_stdout, $raw_stderr];
+    }
+
+    public function __construct($method, $exec_file_path, $form = [], $headers = [], $files = [])
+    {
+        $this->method = $method;
+        $this->form   = $form;
+        $this->files  = $files;
+
+        list($this->exec_file_path, $this->query_string)
+            = self::parseFilePath($exec_file_path);
+
+        $this->headers = [];
+        foreach ($headers as $k => $v) {
+            $this->headers[self::normalizeHeaderName($k)] = $v;
+        }
+
+        $this->initialize();
+    }
+
+    private function initialize()
+    {
+        $this->body = '';
+
+        if (sizeof($this->form)) {
+            $this->headers[self::normalizeHeaderName('content-type')]
+                = 'application/x-www-form-urlencoded';
+
+            $this->body = http_build_query($this->form);
+        }
+
+        if (sizeof($this->files)) {
+            $this->headers[self::normalizeHeaderName('content-type')]
+                = 'multipart/form-data; boundary=' . self::BOUNDARY;
+
+            $this->body = self::buildMultipartBody($this->form, $this->files);
+        }
+    }
+
+    public function request()
+    {
+        $env = [
+            'REQUEST_METHOD'  => $this->method,
+            'SCRIPT_FILENAME' => $this->exec_file_path,
+            'QUERY_STRING'    => $this->query_string,
+        ];
+
+        foreach ($this->headers as $k => $v) {
+            $env[$k] = $v;
+        }
+
+        //TODO: Prepare executing file by merging bootstrap?
+
+        list($ret, $stdout, $stderr) = $this->makeFakeRequest($env, $this->body);
+
+        //TODO: Do something with result
+
+        // TODO: To return Guzzle Response?
+        return [$ret, $stdout, $stderr];
     }
 }
