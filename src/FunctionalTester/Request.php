@@ -120,6 +120,20 @@ END;
         return [$ret, $raw_stdout, $raw_stderr];
     }
 
+    public static function makeFakeResponse($raw_response)
+    {
+        list($headers, $body) = explode("\r\n\r\n", $raw_response);
+
+        if (preg_match('/^Status\:\s([^\r\n]+)/m', $headers, $matches)) {
+            $raw_response = "HTTP/1.1 {$matches[1]}\r\n" . $raw_response;
+        }
+        else {
+            $raw_response = "HTTP/1.1 200 OK\r\n" . $raw_response;
+        }
+
+        return $raw_response;
+    }
+
     public function __construct($method, $exec_file_path, $form = [], $headers = [], $files = [])
     {
         $this->method = $method;
@@ -156,7 +170,7 @@ END;
         }
     }
 
-    public function request()
+    public function send()
     {
         $env = [
             'REQUEST_METHOD'  => $this->method,
@@ -172,9 +186,11 @@ END;
 
         list($ret, $stdout, $stderr) = $this->makeFakeRequest($env, $this->body);
 
-        //TODO: Do something with result
+        // Non-zero exit status => 500 Internal Server Error
+        if ($ret) {
+            throw new Exception($stderr);
+        }
 
-        // TODO: To return Guzzle Response?
-        return [$ret, $stdout, $stderr];
+        return self::makeFakeResponse($stdout);
     }
 }

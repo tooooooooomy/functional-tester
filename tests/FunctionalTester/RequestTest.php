@@ -186,6 +186,25 @@ END
         $this->assertEquals($matches[1], 'hoge');
     }
 
+    function test_makeFakeResponse()
+    {
+        $response = Request::makeFakeResponse(
+            "Status: 302 Moved Temporarily\r\nX-Hoge: hoge\r\n\r\n"
+        );
+        $this->assertEquals(
+            "HTTP/1.1 302 Moved Temporarily\r\nStatus: 302 Moved Temporarily\r\nX-Hoge: hoge\r\n\r\n",
+            $response
+        );
+
+        $response = Request::makeFakeResponse(
+            "X-Hoge: hoge\r\n\r\nStatus: 403 Forbidden\r\n"
+        );
+        $this->assertEquals(
+            "HTTP/1.1 200 OK\r\nX-Hoge: hoge\r\n\r\nStatus: 403 Forbidden\r\n",
+            $response
+        );
+    }
+
     function test_instance()
     {
         $req = new Request('GET', 'hoge.php');
@@ -255,7 +274,7 @@ END
         );
     }
 
-    function test_send_GET_request()
+    function test_send_for_code_200()
     {
         $req = new Request(
             'POST',
@@ -270,11 +289,17 @@ END
             ]
         );
 
-        //XXX TODO: rename or get Guzzle response
-        list($ret, $out, $err) = $req->request();
+        $raw_response = $req->send();
 
-        //var_dump($ret);
-        //var_dump($out);
-        //var_dump($err);
+        $this->assertRegExp('/\AHTTP\/1\.1 200 OK/', $raw_response);
+    }
+
+    function test_send_for_code_302()
+    {
+        $req = new Request('GET', 'tests/apps/redirect.php');
+
+        $raw_response = $req->send();
+
+        $this->assertRegExp('/\AHTTP\/1\.1 302 Moved Temporarily/', $raw_response);
     }
 }
