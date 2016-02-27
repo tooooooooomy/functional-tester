@@ -2,3 +2,4 @@ vendor/*
 .idea/*
 src/FunctionalTester/tmp/*
 !.gitkeep
+/composer.phar
