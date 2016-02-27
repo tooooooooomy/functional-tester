@@ -1,0 +1,7 @@
+HTTP/1.1 200 OK
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+Set-Cookie: hoge=hogehoge; expires=Fri, 04-Jan-8419 16:11:51 GMT; Max-Age=202054542594; path=/hogehoge; domain=hogehoge.com
+Set-Cookie: fuga=fugafuga; expires=Fri, 04-Jan-8419 16:11:51 GMT; Max-Age=202054542594; path=/fugafuga; domain=fugafuga.com
+Content-type: text/html; charset=UTF-8
