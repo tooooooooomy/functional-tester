@@ -5,11 +5,12 @@ header('Location: http://www.example.com/');
 
 session_start();
 
-$response = [];
+$response = [
+    'session' => $_SESSION,
+    'get' => $_GET,
+    'post' => $_POST,
+];
 
-if (isset($_SESSION)) $response['session'] = $_SESSION;
-if (isset($_POST))    $response['get']     = $_GET;
-if (isset($_GET))     $response['post']    = $_POST;
 echo json_encode($response, true);
 
 exit;
