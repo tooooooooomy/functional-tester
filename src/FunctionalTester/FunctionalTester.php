@@ -100,7 +100,7 @@ class FunctionalTester
      * @param null|array $parameters
      * @param null|array $options
      * @param null $files
-     * @return bool|Response
+     * @return Response
      */
     public function request($method, $scriptFile, $parameters = null, $options = null, $files = null)
     {
@@ -156,7 +156,7 @@ class FunctionalTester
      * @param string $scriptFile
      * @param null|array $parameters
      * @param null|array $options
-     * @return bool|Response
+     * @return Response
      */
     public function get($scriptFile, $parameters = null, $options = null)
     {
@@ -172,7 +172,7 @@ class FunctionalTester
      * @param null|array $parameters
      * @param null|array $options
      * @param null|array $files
-     * @return bool|Response
+     * @return Response
      */
     public function post($scriptFile, $parameters = null, $options = null, $files= null)
     {
