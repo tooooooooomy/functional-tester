@@ -181,10 +181,10 @@ END
         $this->assertEquals(255, $ret);
         $this->assertTrue(strlen($stderr) > 0);
 
-        $eol = PHP_EOL;
-        preg_match("/{$eol}{$eol}(.+)$/', $stdout, $matches);
+        var_dump($stdout);
+        list($header, $body) = explode("\r\n\r\n", $stdout);
 
-        $this->assertRegExp('/\Ahoge/', $matches[1]);
+        $this->assertRegExp('/\Ahoge/', $body);
     }
 
     function test_makeFakeResponse()
