@@ -6,8 +6,6 @@ use Guzzle\Parser\ParserRegistry;
 
 class Response extends GuzzleResponse
 {
-    protected $cookies = null;
-
     /**
      * @param string $message
      * @return self|bool
