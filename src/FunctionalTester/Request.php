@@ -102,7 +102,13 @@ END;
         $env['REDIRECT_STATUS'] = 'CGI';
         $env['CONTENT_LENGTH'] = strlen($body);
 
-        $proc = proc_open('php-cgi', $descriptor_spec, $pipes, getcwd(), $env);
+        $proc = proc_open(
+            shell_exec('which php-cgi'),
+            $descriptor_spec,
+            $pipes,
+            getcwd(),
+            $env
+        );
 
         if (is_resource($proc)) {
             fwrite($pipes[0], $body);
