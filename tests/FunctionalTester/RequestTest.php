@@ -181,6 +181,8 @@ END
         $this->assertEquals(255, $ret);
         $this->assertTrue(strlen($stderr) > 0);
 
+        var_dump($stdout);
+
         preg_match('/\r\n\r\n(.+)$/', $stdout, $matches);
 
         $this->assertEquals($matches[1], 'hoge');
