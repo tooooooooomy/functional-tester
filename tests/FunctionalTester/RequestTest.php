@@ -181,7 +181,8 @@ END
         $this->assertEquals(255, $ret);
         $this->assertTrue(strlen($stderr) > 0);
 
-        preg_match('/\r\n\r\n(.+)$/', $stdout, $matches);
+        $eol = PHP_EOL;
+        preg_match("/{$eol}{$eol}(.+)$/', $stdout, $matches);
 
         $this->assertRegExp('/\Ahoge/', $matches[1]);
     }
