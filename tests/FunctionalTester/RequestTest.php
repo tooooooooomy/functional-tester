@@ -181,7 +181,6 @@ END
         $this->assertEquals(255, $ret);
         $this->assertTrue(strlen($stderr) > 0);
 
-        var_dump($stdout);
         list($header, $body) = explode("\r\n\r\n", $stdout);
 
         $this->assertRegExp('/\Ahoge/', $body);
