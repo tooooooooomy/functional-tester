@@ -41,17 +41,19 @@ class Response extends GuzzleResponse
     }
 
     /**
-     * @return array|null
+     * @return array
      */
     public function getCookies()
     {
-        if (!$this->cookies && $this->getSetCookie()) {
+        $cookies = [];
+        if ($this->getSetCookie()) {
             $cookieStrings = $this->getHeader('Set-Cookie')->toArray();
-            $this->cookies = $this->parseCookies($cookieStrings);
 
-            return $this->cookies;
+            foreach ($cookieStrings as $cookieStr) {
+                $cookies[] = $this->parseCookie($cookieStr);
+            }
         }
 
-        return null;
+        return $cookies;
     }
 }

@@ -12,7 +12,7 @@ class ResponseTest extends TestCase
             $message = file_get_contents(__DIR__ . '/data/mock_response');
             $response = Response::fromMessage($message);
 
-            $this->assertNull($response->getCookies());
+            $this->assertEmpty($response->getCookies());
         });
 
         $this->specify('if Set-cookies header is specified', function () {
