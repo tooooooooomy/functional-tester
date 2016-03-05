@@ -228,7 +228,7 @@ class FunctionalTester
     {
         $lines = preg_split('/(\\r?\\n)/', $response, -1, PREG_SPLIT_DELIM_CAPTURE);
         $parts = explode(':', $lines[0], 2);
-        $startLine = $parts[0] == 'Status' ? "HTTP/1.1" . $parts[1] . "\r\n" : "HTTP/1.1 200 OK";
+        $startLine = $parts[0] == 'Status' ? "HTTP/1.1" . $parts[1] . "\r\n" : "HTTP/1.1 200 OK" . "\r\n";
 
         return $startLine . $response;
     }
