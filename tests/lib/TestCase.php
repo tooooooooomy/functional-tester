@@ -1,5 +1,5 @@
 <?php
-namespace Tests\lib;
+namespace FunctionalTester\tests\lib;
 
 use Codeception\Specify;
 
