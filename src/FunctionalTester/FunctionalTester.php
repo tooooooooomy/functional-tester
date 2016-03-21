@@ -1,6 +1,9 @@
 <?php
 namespace FunctionalTester;
 
+use FunctionalTester\Message\MessageFactory;
+use FunctionalTester\Message\Response;
+
 class FunctionalTester
 {
     /**
@@ -29,13 +32,20 @@ class FunctionalTester
     protected $boundary = 'Boundary';
 
     /**
+     * @var MessageFactory
+     */
+    protected $messageFactory;
+
+    /**
      * @param string $documentRoot
      * @param string $includePath
+     * @param MessageFactory|null $messageFactory
      */
-    public function __construct($documentRoot = '/', $includePath = '.:/usr/share/pear:/usr/share/php')
+    public function __construct($documentRoot = '/', $includePath = '.:/usr/share/pear:/usr/share/php', MessageFactory $messageFactory=null)
     {
         $this->documentRoot = $documentRoot;
         $this->includePath = $includePath;
+        $this->messageFactory = $messageFactory ?: new MessageFactory();
     }
 
     /**
@@ -129,12 +139,11 @@ class FunctionalTester
 
         $envStr = $this->makeEnvString();
         $phpOptionsStr = $this->makePhpOptionsString();
-        $response = $this->send($reqBody, $envStr, $phpOptionsStr);
-        $adjustedResponse = $this->setHttpProtocolToResponse($response);
+        $responseMessage = $this->send($reqBody, $envStr, $phpOptionsStr);
 
         unlink($execFile);
 
-        return $this->parseResponse($adjustedResponse);
+        return $this->messageFactory->fromMessage($responseMessage);
     }
 
     /**
@@ -218,28 +227,6 @@ class FunctionalTester
         }
 
         return $env;
-    }
-
-    /**
-     * @param string $response
-     * @return string
-     */
-    public function setHttpProtocolToResponse($response)
-    {
-        $lines = preg_split('/(\\r?\\n)/', $response, -1, PREG_SPLIT_DELIM_CAPTURE);
-        $parts = explode(':', $lines[0], 2);
-        $startLine = $parts[0] == 'Status' ? "HTTP/1.1" . $parts[1] . "\r\n" : "HTTP/1.1 200 OK";
-
-        return $startLine . $response;
-    }
-
-    /**
-     * @param string $response
-     * @return bool|Response
-     */
-    public function parseResponse($response)
-    {
-        return Response::fromMessage($response);
     }
 
     /**
