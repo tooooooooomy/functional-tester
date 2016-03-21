@@ -5,6 +5,8 @@ class Request
 {
     const BOUNDARY = 'xYzZY';
 
+    public static $PHP_INI;
+
     private
         $method,
         $query_string,
@@ -102,8 +104,15 @@ END;
         $env['REDIRECT_STATUS'] = 'CGI';
         $env['CONTENT_LENGTH'] = strlen($body);
 
+        $php_bin = shell_exec('which php-cgi');
+        $php_bin = preg_replace('/\R/', '', $php_bin);
+
+        if (isset(self::$PHP_INI)) {
+            $php_bin .= " -c " . self::$PHP_INI;
+        }
+
         $proc = proc_open(
-            shell_exec('which php-cgi'),
+            $php_bin,
             $descriptor_spec,
             $pipes,
             getcwd(),

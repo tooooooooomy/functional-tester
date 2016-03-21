@@ -322,4 +322,17 @@ END
 
         $this->assertEquals('2', $data['visited_count']);
     }
+
+    function test_with_include_path()
+    {
+        Request::$PHP_INI = './tests/apps/include/php.ini';
+
+        $req = new Request(
+            'GET', 'tests/apps/with_include_path.php'
+        );
+
+        $res = $req->send();
+
+        $this->assertRegExp('/hogehoge/', $res);
+    }
 }
