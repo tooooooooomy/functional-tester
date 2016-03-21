@@ -302,4 +302,24 @@ END
 
         $this->assertRegExp('/\AHTTP\/1\.1 302 Moved Temporarily/', $raw_response);
     }
+
+    function test_cookie_management()
+    {
+        $fake_session_id = sha1(rand());
+
+        $req = new Request(
+            'GET',
+            'tests/apps/cookie.php',
+            [],
+            ['Cookie' => "PHPSESSID={$fake_session_id}"]
+        );
+
+        $res1 = $req->send();
+        $res2 = $req->send();
+
+        list($headers, $body) = explode("\r\n\r\n", $res2);
+        $data = json_decode($body, true);
+
+        $this->assertEquals('2', $data['visited_count']);
+    }
 }
