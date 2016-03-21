@@ -34,9 +34,9 @@ class Request
         return [$file, $query_string];
     }
 
-    public static function normalizeHeaderName($name)
+    public static function normalizeHttpHeaderName($name)
     {
-        return strtoupper(str_replace('-', '_', $name));
+        return 'HTTP_' . strtoupper(str_replace('-', '_', $name));
     }
 
     public static function buildMultipartBody($form, $files)
@@ -151,7 +151,7 @@ END;
 
         $this->headers = [];
         foreach ($headers as $k => $v) {
-            $this->headers[self::normalizeHeaderName($k)] = $v;
+            $this->headers[self::normalizeHttpHeaderName($k)] = $v;
         }
 
         $this->initialize();
@@ -162,14 +162,14 @@ END;
         $this->body = '';
 
         if (sizeof($this->form)) {
-            $this->headers[self::normalizeHeaderName('content-type')]
+            $this->headers[self::normalizeHttpHeaderName('content-type')]
                 = 'application/x-www-form-urlencoded';
 
             $this->body = http_build_query($this->form);
         }
 
         if (sizeof($this->files)) {
-            $this->headers[self::normalizeHeaderName('content-type')]
+            $this->headers[self::normalizeHttpHeaderName('content-type')]
                 = 'multipart/form-data; boundary=' . self::BOUNDARY;
 
             $this->body = self::buildMultipartBody($this->form, $this->files);

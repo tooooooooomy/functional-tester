@@ -235,7 +235,7 @@ END
         $req = new Request('GET', 'hoge.php', [], ['x-hoge' => 'foobar']);
 
         $this->assertEquals(
-            ['X_HOGE' => 'foobar'],
+            ['HTTP_X_HOGE' => 'foobar'],
             $req->getHeaders()
         );
     }
@@ -246,7 +246,7 @@ END
 
         $this->assertEquals('POST', $req->getMethod());
         $this->assertEquals(
-            ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'],
+            ['HTTP_CONTENT_TYPE' => 'application/x-www-form-urlencoded'],
             $req->getHeaders()
         );
         $this->assertEquals(
@@ -261,7 +261,7 @@ END
 
         $this->assertEquals('POST', $req->getMethod());
         $this->assertEquals(
-            ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'],
+            ['HTTP_CONTENT_TYPE' => 'application/x-www-form-urlencoded'],
             $req->getHeaders()
         );
         $this->assertEquals(
