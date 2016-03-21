@@ -1,7 +1,7 @@
 <?php
 namespace Tests\FunctionalTester;
 
-use Tests\lib\TestCase;
+use FunctionalTester\tests\lib\TestCase;
 use FunctionalTester\Request;
 
 class RequestTest extends TestCase
