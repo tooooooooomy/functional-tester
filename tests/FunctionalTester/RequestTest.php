@@ -364,14 +364,10 @@ END
         );
 
         $res = $req->send();
-        var_dump($res);
 
-        list($headers, $content) = explode("\r\n\r\n", $res);
-        $data = json_decode($content, true);
-
-        $this->assertEquals(
-            ['input' => ['hoge' => 'fuga']],
-            $data
+        $this->assertRegExp(
+            '/{"input":{"hoge":"fuga"}}/',
+            $res
         );
     }
 
