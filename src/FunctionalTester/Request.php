@@ -6,6 +6,9 @@ class Request
     const BOUNDARY = 'xYzZY';
 
     public static $INCLUDE_PATH = [];
+    public static $INI_SET = [
+        'automatically_populate_raw_post_data=-1'
+    ];
 
     private static $CGI_ENV_VARS = ['CONTENT_TYPE', 'CONTENT_LENGTH'];
 
@@ -29,6 +32,11 @@ class Request
     public static function addIncludePath($path)
     {
         self::$INCLUDE_PATH[] = $path;
+    }
+
+    public static function addIniSet($ini_set)
+    {
+        self::$INI_SET[] = $ini_set;
     }
 
     public static function parseFilePath($filepath)
@@ -102,6 +110,25 @@ END;
         return $body;
     }
 
+    public static function getPhpBin()
+    {
+        $php_bin = shell_exec('which php-cgi');
+        $php_bin = preg_replace('/\R/', '', $php_bin);
+
+        if (sizeof(self::$INCLUDE_PATH)) {
+            $include_path = implode(':', self::$INCLUDE_PATH)
+                . ':' . get_include_path();
+            $php_bin .= " -d include_path=\"{$include_path}\"";
+        }
+        if (sizeof(self::$INI_SET)) {
+            foreach (self::$INI_SET as $ini_set) {
+                $php_bin .= " -d {$ini_set}";
+            }
+        }
+
+        return $php_bin;
+    }
+
     public static function makeFakeRequest($env, $body)
     {
         $raw_stdout = '';
@@ -118,17 +145,8 @@ END;
         $env['REDIRECT_STATUS'] = 'CGI';
         $env['CONTENT_LENGTH'] = strlen($body);
 
-        $php_bin = shell_exec('which php-cgi');
-        $php_bin = preg_replace('/\R/', '', $php_bin);
-
-        if (sizeof(self::$INCLUDE_PATH)) {
-            $include_path = implode(':', self::$INCLUDE_PATH)
-                . ':' . get_include_path();
-            $php_bin .= " -d include_path=\"{$include_path}\"";
-        }
-
         $proc = proc_open(
-            $php_bin,
+            self::getPhpBin(),
             $descriptor_spec,
             $pipes,
             getcwd(),

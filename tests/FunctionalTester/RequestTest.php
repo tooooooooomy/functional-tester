@@ -6,6 +6,27 @@ use FunctionalTester\Request;
 
 class RequestTest extends TestCase
 {
+    function test_getPhpBin()
+    {
+        Request::addIncludePath('path/to/hoge');
+        Request::addIniSet('hoge=1');
+
+        $res = Request::getPhpBin();
+
+        $this->assertRegExp(
+            '/include_path="path\/to\/hoge\:/',
+            $res
+        );
+        $this->assertRegExp(
+            '/-d automatically_populate_raw_post_data=-1/',
+            $res
+        );
+        $this->assertRegExp(
+            '/-d hoge=1/',
+            $res
+        );
+    }
+
     function test_parseFilePath_without_query()
     {
         list($f, $q) = Request::parseFilePath('hoge.php');
@@ -345,7 +366,6 @@ END
         $res = $req->send();
 
         list($headers, $content) = explode("\r\n\r\n", $res);
-        var_dump($content);
         $data = json_decode($content, true);
 
         $this->assertEquals(
