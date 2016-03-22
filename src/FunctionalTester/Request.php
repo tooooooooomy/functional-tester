@@ -13,7 +13,7 @@ class Request
         $method,
         $query_string,
         $exec_file_path,
-        $form,
+        $content,
         $headers,
         $files,
         $body;
@@ -21,7 +21,7 @@ class Request
     public function getMethod()   { return $this->method; }
     public function getFilePath() { return $this->exec_file_path; }
     public function getQueryString() { return $this->query_string; }
-    public function getForm()     { return $this->form; }
+    public function getContent()     { return $this->content; }
     public function getHeaders()  { return $this->headers; }
     public function getFiles()    { return $this->files; }
     public function getBody()     { return $this->body; }
@@ -165,11 +165,11 @@ END;
         return $raw_response;
     }
 
-    public function __construct($method, $exec_file_path, $form = [], $headers = [], $files = [])
+    public function __construct($method, $exec_file_path, $content = [], $headers = [], $files = [])
     {
-        $this->method = $method;
-        $this->form   = $form;
-        $this->files  = $files;
+        $this->method  = $method;
+        $this->content = $content;
+        $this->files   = $files;
 
         list($this->exec_file_path, $this->query_string)
             = self::parseFilePath($exec_file_path);
@@ -186,18 +186,20 @@ END;
     {
         $this->body = '';
 
-        if (sizeof($this->form)) {
-            $this->headers[self::normalizeHttpHeaderName('content-type')]
-                = 'application/x-www-form-urlencoded';
-
-            $this->body = http_build_query($this->form);
-        }
-
-        if (sizeof($this->files)) {
+        if (is_array($this->content) && sizeof($this->files)) {
             $this->headers[self::normalizeHttpHeaderName('content-type')]
                 = 'multipart/form-data; boundary=' . self::BOUNDARY;
 
-            $this->body = self::buildMultipartBody($this->form, $this->files);
+            $this->body = self::buildMultipartBody($this->content, $this->files);
+        }
+        elseif (is_array($this->content) && sizeof($this->content)) {
+            $this->headers[self::normalizeHttpHeaderName('content-type')]
+                = 'application/x-www-form-urlencoded';
+
+            $this->body = http_build_query($this->content);
+        }
+        elseif (is_string($this->content)) {
+            $this->body = $this->content;
         }
     }
 

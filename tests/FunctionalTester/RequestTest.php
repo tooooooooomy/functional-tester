@@ -213,7 +213,7 @@ END
         $this->assertEquals('GET', $req->getMethod());
         $this->assertEquals('hoge.php', $req->getFilePath());
         $this->assertEquals('', $req->getQueryString());
-        $this->assertEquals([], $req->getForm());
+        $this->assertEquals([], $req->getContent());
         $this->assertEquals([], $req->getHeaders());
         $this->assertEquals([], $req->getFiles());
     }
@@ -227,7 +227,7 @@ END
             'hoge=fuga&foo=bar',
             $req->getQueryString()
         );
-        $this->assertEquals([], $req->getForm());
+        $this->assertEquals([], $req->getContent());
     }
 
     function test_arbitrary_header_is_normalized()
@@ -261,7 +261,7 @@ END
         );
         $this->assertEquals(
             ['hoge' => 'fuga'],
-            $req->getForm()
+            $req->getContent()
         );
     }
 
@@ -279,8 +279,28 @@ END
             $req->getQueryString()
         );
         $this->assertEquals(
-            ['hoge' => 'fuga'],
-            $req->getForm()
+            'hoge=fuga',
+            $req->getBody()
+        );
+    }
+
+    function test_artitrary_content()
+    {
+        $req = new Request(
+            'POST',
+            'hoge.php',
+            '{"hoge":"fuga"}',
+            ['content-type' => 'application/json']
+        );
+
+        $this->assertEquals('POST', $req->getMethod());
+        $this->assertEquals(
+            ['CONTENT_TYPE' => 'application/json'],
+            $req->getHeaders()
+        );
+        $this->assertEquals(
+            '{"hoge":"fuga"}',
+            $req->getBody()
         );
     }
 
@@ -311,6 +331,25 @@ END
         $raw_response = $req->send();
 
         $this->assertRegExp('/\AHTTP\/1\.1 302 Moved Temporarily/', $raw_response);
+    }
+
+    function test_send_json_for_code_200()
+    {
+        $req = new Request(
+            'POST',
+            'tests/apps/json.php',
+            '{"hoge":"fuga"}',
+            ['content-type' => 'application/json']
+        );
+
+        $res = $req->send();
+
+        list($headers, $content) = explode("\r\n\r\n", $res);
+
+        $this->assertEquals(
+            ['input' => ['hoge' => 'fuga']],
+            json_decode($content, true)
+        );
     }
 
     function test_cookie_management()
