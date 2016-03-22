@@ -364,6 +364,7 @@ END
         );
 
         $res = $req->send();
+        var_dump($res);
 
         list($headers, $content) = explode("\r\n\r\n", $res);
         $data = json_decode($content, true);
