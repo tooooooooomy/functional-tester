@@ -345,10 +345,12 @@ END
         $res = $req->send();
 
         list($headers, $content) = explode("\r\n\r\n", $res);
+        var_dump($content);
+        $data = json_decode($content, true);
 
         $this->assertEquals(
             ['input' => ['hoge' => 'fuga']],
-            json_decode($content, true)
+            $data
         );
     }
 
