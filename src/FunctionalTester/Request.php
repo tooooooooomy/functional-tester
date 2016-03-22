@@ -7,6 +7,8 @@ class Request
 
     public static $INCLUDE_PATH = [];
 
+    private static $CGI_ENV_VARS = ['CONTENT_TYPE', 'CONTENT_LENGTH'];
+
     private
         $method,
         $query_string,
@@ -41,9 +43,16 @@ class Request
         return [$file, $query_string];
     }
 
+    # http://www.tutorialspoint.com/perl/perl_cgi.htm
     public static function normalizeHttpHeaderName($name)
     {
-        return 'HTTP_' . strtoupper(str_replace('-', '_', $name));
+        $name = strtoupper(str_replace('-', '_', $name));
+
+        if (!in_array($name, self::$CGI_ENV_VARS)) {
+            $name = 'HTTP_' . $name;
+        }
+
+        return $name;
     }
 
     public static function buildMultipartBody($form, $files)

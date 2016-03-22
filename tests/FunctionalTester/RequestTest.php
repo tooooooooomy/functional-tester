@@ -230,12 +230,22 @@ END
         $this->assertEquals([], $req->getForm());
     }
 
-    function test_header_is_normalized()
+    function test_arbitrary_header_is_normalized()
     {
         $req = new Request('GET', 'hoge.php', [], ['x-hoge' => 'foobar']);
 
         $this->assertEquals(
             ['HTTP_X_HOGE' => 'foobar'],
+            $req->getHeaders()
+        );
+    }
+
+    function test_cgi_header_is_normalized()
+    {
+        $req = new Request('GET', 'hoge.php', [], ['content-type' => 'application/json']);
+
+        $this->assertEquals(
+            ['CONTENT_TYPE' => 'application/json'],
             $req->getHeaders()
         );
     }
@@ -246,7 +256,7 @@ END
 
         $this->assertEquals('POST', $req->getMethod());
         $this->assertEquals(
-            ['HTTP_CONTENT_TYPE' => 'application/x-www-form-urlencoded'],
+            ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'],
             $req->getHeaders()
         );
         $this->assertEquals(
@@ -261,7 +271,7 @@ END
 
         $this->assertEquals('POST', $req->getMethod());
         $this->assertEquals(
-            ['HTTP_CONTENT_TYPE' => 'application/x-www-form-urlencoded'],
+            ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'],
             $req->getHeaders()
         );
         $this->assertEquals(
