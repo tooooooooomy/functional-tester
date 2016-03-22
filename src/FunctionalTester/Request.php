@@ -5,7 +5,7 @@ class Request
 {
     const BOUNDARY = 'xYzZY';
 
-    public static $PHP_INI;
+    public static $INCLUDE_PATH = [];
 
     private
         $method,
@@ -23,6 +23,11 @@ class Request
     public function getHeaders()  { return $this->headers; }
     public function getFiles()    { return $this->files; }
     public function getBody()     { return $this->body; }
+
+    public static function addIncludePath($path)
+    {
+        self::$INCLUDE_PATH[] = $path;
+    }
 
     public static function parseFilePath($filepath)
     {
@@ -107,8 +112,10 @@ END;
         $php_bin = shell_exec('which php-cgi');
         $php_bin = preg_replace('/\R/', '', $php_bin);
 
-        if (isset(self::$PHP_INI)) {
-            $php_bin .= " -c " . self::$PHP_INI;
+        if (sizeof(self::$INCLUDE_PATH)) {
+            $include_path = implode(':', self::$INCLUDE_PATH)
+                . ':' . get_include_path();
+            $php_bin .= " -d include_path=\"{$include_path}\"";
         }
 
         $proc = proc_open(

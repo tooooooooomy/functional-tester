@@ -325,7 +325,7 @@ END
 
     function test_with_include_path()
     {
-        Request::$PHP_INI = './tests/apps/include/php.ini';
+        Request::addIncludePath(getcwd() . '/tests/apps/include');
 
         $req = new Request(
             'GET', 'tests/apps/with_include_path.php'

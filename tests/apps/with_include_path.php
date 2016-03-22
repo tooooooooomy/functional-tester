@@ -1,5 +1,5 @@
 <?php
 
-include('inc.php');
+require('function.php');
 
 echo hoge();
