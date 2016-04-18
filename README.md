@@ -11,7 +11,7 @@ First, create a new "FunctionalTester" instance.
 
 You can set session, document root and include paths used in your target product.
 
-If you call `request` method like http request, you can get a parsed response instance of `Guzzle\Http\Message\Response`
+If you call `request` method like http request, you can get a parsed response instance of `GuzzleHttp\Message\Response`
 
 ```php
 use FunctionalTester/FunctionalTester;
