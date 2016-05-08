@@ -4,6 +4,9 @@ namespace FunctionalTester;
 
 class Request
 {
+    /**
+     * Boundary separator for a multipart message.
+     */
     const BOUNDARY = 'xYzZY';
 
     public static $INCLUDE_PATH = [];
@@ -11,55 +14,157 @@ class Request
         'automatically_populate_raw_post_data=-1',
     ];
 
+    /**
+     * Mandatory environmental variables in CGI.
+     */
     private static $CGI_ENV_VARS = ['CONTENT_TYPE', 'CONTENT_LENGTH'];
 
-    private $method,
-        $query_string,
-        $exec_file_path,
-        $content,
-        $headers,
-        $files,
-        $body;
+    /**
+     * HTTP request method.
+     *
+     * @var string
+     */
+    private $method;
 
+    /**
+     * HTTP request query string.
+     *
+     * @var string
+     */
+    private $query_string;
+
+    /**
+     * Executing local file.
+     *
+     * @var string
+     */
+    private $exec_file_path;
+
+    /**
+     * HTTP request content.  A form if array, else request body.
+     *
+     * @var array|string
+     */
+    private $content;
+
+    /**
+     * HTTP request headers.
+     *
+     * @var array
+     */
+    private $headers;
+
+    /**
+     * Files to be added to a request.
+     *
+     * @var array
+     */
+    private $files;
+
+    /**
+     * HTTP request body.
+     *
+     * @var string
+     */
+    private $body;
+
+    /**
+     * An accessor for private variable `method`.
+     *
+     * @return string
+     */
     public function getMethod()
     {
         return $this->method;
     }
+
+    /**
+     * An accessor for private variable `exec_file_path`.
+     *
+     * @return string
+     */
     public function getFilePath()
     {
         return $this->exec_file_path;
     }
+
+    /**
+     * An accessor for private variable `query_string`.
+     *
+     * @return string
+     */
     public function getQueryString()
     {
         return $this->query_string;
     }
+
+    /**
+     * An accessor for private variable `content`.
+     *
+     * @return array|string
+     */
     public function getContent()
     {
         return $this->content;
     }
+
+    /**
+     * An accessor for private variable `headers`.
+     *
+     * @return array
+     */
     public function getHeaders()
     {
         return $this->headers;
     }
+
+    /**
+     * An accessor for private variable `files`.
+     *
+     * @return array
+     */
     public function getFiles()
     {
         return $this->files;
     }
+
+    /**
+     * An accessor for private variable `body`.
+     *
+     * @return string
+     */
     public function getBody()
     {
         return $this->body;
     }
 
+    /**
+     * Appends $path into static $INCLUDE_PATH.
+     *
+     * @param string $path
+     */
     public static function addIncludePath($path)
     {
         self::$INCLUDE_PATH[] = $path;
     }
 
+    /**
+     * Appends an option for ini_set into static $INI_SET.
+     *
+     * @param string $ini_set
+     */
     public static function addIniSet($ini_set)
     {
         self::$INI_SET[] = $ini_set;
     }
 
+    /**
+     * Separates request file path (request URI) into `file` and `query_string`.
+     *
+     * @param string $filepath
+     *
+     * @return array
+     */
     public static function parseFilePath($filepath)
     {
         $filepath = preg_replace('/\#.+\z/', '', $filepath);
@@ -72,7 +177,14 @@ class Request
         return [$file, $query_string];
     }
 
-    # http://www.tutorialspoint.com/perl/perl_cgi.htm
+    /**
+     * Normalizes HTTP header name to be passed in ENV
+     * (http://www.tutorialspoint.com/perl/perl_cgi.htm).
+     *
+     * @param string $name
+     *
+     * @return string
+     */
     public static function normalizeHttpHeaderName($name)
     {
         $name = strtoupper(str_replace('-', '_', $name));
@@ -84,6 +196,14 @@ class Request
         return $name;
     }
 
+    /**
+     * Builds multipart HTTP message body from form variables and attaching files.
+     *
+     * @param array $form
+     * @param array $files
+     *
+     * @return string
+     */
     public static function buildMultipartBody($form, $files)
     {
         $body = '';
@@ -130,6 +250,11 @@ END;
         return $body;
     }
 
+    /**
+     * Finds installed `php-cgi` path and append $INCLUDE_PATH and $INI_SET to its path.
+     *
+     * @return string
+     */
     public static function getPhpBin()
     {
         $php_bin = shell_exec('which php-cgi');
@@ -149,6 +274,14 @@ END;
         return $php_bin;
     }
 
+    /**
+     * Makes a fake HTTP request to local file.
+     *
+     * @param array  $env
+     * @param string $body
+     *
+     * @return array
+     */
     public static function makeFakeRequest($env, $body)
     {
         $raw_stdout = '';
@@ -189,6 +322,13 @@ END;
         return [$ret, $raw_stdout, $raw_stderr];
     }
 
+    /**
+     * Makes a fake HTTP response message from raw response from local file.
+     *
+     * @param string $raw_response
+     *
+     * @return string
+     */
     public static function makeFakeResponse($raw_response)
     {
         list($headers, $body) = explode("\r\n\r\n", $raw_response);
@@ -202,6 +342,15 @@ END;
         return $raw_response;
     }
 
+    /**
+     * Creates an instance.
+     *
+     * @param string $method
+     * @param string $exec_file_path
+     * @param array  $content
+     * @param array  $headers
+     * @param array  $files
+     */
     public function __construct($method, $exec_file_path, $content = [], $headers = [], $files = [])
     {
         $this->method = $method;
@@ -219,6 +368,9 @@ END;
         $this->initialize();
     }
 
+    /**
+     * Initializes an instance.
+     */
     private function initialize()
     {
         $this->body = '';
@@ -238,6 +390,12 @@ END;
         }
     }
 
+    /**
+     * Fakes sending an HTTP request to local file,
+     * and returns a bare HTTP response message in string.
+     *
+     * @return string
+     */
     public function send()
     {
         $env = [
