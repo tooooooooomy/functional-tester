@@ -1,4 +1,5 @@
 <?php
+
 namespace FunctionalTester;
 
 class Request
@@ -7,13 +8,12 @@ class Request
 
     public static $INCLUDE_PATH = [];
     public static $INI_SET = [
-        'automatically_populate_raw_post_data=-1'
+        'automatically_populate_raw_post_data=-1',
     ];
 
     private static $CGI_ENV_VARS = ['CONTENT_TYPE', 'CONTENT_LENGTH'];
 
-    private
-        $method,
+    private $method,
         $query_string,
         $exec_file_path,
         $content,
@@ -21,13 +21,34 @@ class Request
         $files,
         $body;
 
-    public function getMethod()   { return $this->method; }
-    public function getFilePath() { return $this->exec_file_path; }
-    public function getQueryString() { return $this->query_string; }
-    public function getContent()     { return $this->content; }
-    public function getHeaders()  { return $this->headers; }
-    public function getFiles()    { return $this->files; }
-    public function getBody()     { return $this->body; }
+    public function getMethod()
+    {
+        return $this->method;
+    }
+    public function getFilePath()
+    {
+        return $this->exec_file_path;
+    }
+    public function getQueryString()
+    {
+        return $this->query_string;
+    }
+    public function getContent()
+    {
+        return $this->content;
+    }
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+    public function getFiles()
+    {
+        return $this->files;
+    }
+    public function getBody()
+    {
+        return $this->body;
+    }
 
     public static function addIncludePath($path)
     {
@@ -57,7 +78,7 @@ class Request
         $name = strtoupper(str_replace('-', '_', $name));
 
         if (!in_array($name, self::$CGI_ENV_VARS)) {
-            $name = 'HTTP_' . $name;
+            $name = 'HTTP_'.$name;
         }
 
         return $name;
@@ -79,7 +100,6 @@ END;
         }
 
         foreach ($files as $k => $file) {
-
             if (is_array($file)) {
                 $body .= <<<END
 --{$boundary}
@@ -90,8 +110,8 @@ Content-Type: {$file['type']}
 
 END;
             } elseif (is_string($file)) {
-                $name    = basename($file);
-                $type    = mime_content_type($file);
+                $name = basename($file);
+                $type = mime_content_type($file);
                 $content = file_get_contents($file);
 
                 $body .= <<<END
@@ -117,7 +137,7 @@ END;
 
         if (sizeof(self::$INCLUDE_PATH)) {
             $include_path = implode(':', self::$INCLUDE_PATH)
-                . ':' . get_include_path();
+                .':'.get_include_path();
             $php_bin .= " -d include_path=\"{$include_path}\"";
         }
         if (sizeof(self::$INI_SET)) {
@@ -174,10 +194,9 @@ END;
         list($headers, $body) = explode("\r\n\r\n", $raw_response);
 
         if (preg_match('/^Status\:\s([^\r\n]+)/m', $headers, $matches)) {
-            $raw_response = "HTTP/1.1 {$matches[1]}\r\n" . $raw_response;
-        }
-        else {
-            $raw_response = "HTTP/1.1 200 OK\r\n" . $raw_response;
+            $raw_response = "HTTP/1.1 {$matches[1]}\r\n".$raw_response;
+        } else {
+            $raw_response = "HTTP/1.1 200 OK\r\n".$raw_response;
         }
 
         return $raw_response;
@@ -185,9 +204,9 @@ END;
 
     public function __construct($method, $exec_file_path, $content = [], $headers = [], $files = [])
     {
-        $this->method  = $method;
+        $this->method = $method;
         $this->content = $content;
-        $this->files   = $files;
+        $this->files = $files;
 
         list($this->exec_file_path, $this->query_string)
             = self::parseFilePath($exec_file_path);
@@ -206,17 +225,15 @@ END;
 
         if (is_array($this->content) && sizeof($this->files)) {
             $this->headers[self::normalizeHttpHeaderName('content-type')]
-                = 'multipart/form-data; boundary=' . self::BOUNDARY;
+                = 'multipart/form-data; boundary='.self::BOUNDARY;
 
             $this->body = self::buildMultipartBody($this->content, $this->files);
-        }
-        elseif (is_array($this->content) && sizeof($this->content)) {
+        } elseif (is_array($this->content) && sizeof($this->content)) {
             $this->headers[self::normalizeHttpHeaderName('content-type')]
                 = 'application/x-www-form-urlencoded';
 
             $this->body = http_build_query($this->content);
-        }
-        elseif (is_string($this->content)) {
+        } elseif (is_string($this->content)) {
             $this->body = $this->content;
         }
     }
@@ -224,9 +241,9 @@ END;
     public function send()
     {
         $env = [
-            'REQUEST_METHOD'  => $this->method,
+            'REQUEST_METHOD' => $this->method,
             'SCRIPT_FILENAME' => $this->exec_file_path,
-            'QUERY_STRING'    => $this->query_string,
+            'QUERY_STRING' => $this->query_string,
         ];
 
         foreach ($this->headers as $k => $v) {

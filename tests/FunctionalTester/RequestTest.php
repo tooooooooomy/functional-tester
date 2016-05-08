@@ -1,12 +1,13 @@
 <?php
-namespace Tests\FunctionalTester;
+
+namespace tests\FunctionalTester;
 
 use FunctionalTester\tests\lib\TestCase;
 use FunctionalTester\Request;
 
 class RequestTest extends TestCase
 {
-    function test_getPhpBin()
+    public function test_getPhpBin()
     {
         Request::addIncludePath('path/to/hoge');
         Request::addIniSet('hoge=1');
@@ -27,7 +28,7 @@ class RequestTest extends TestCase
         );
     }
 
-    function test_parseFilePath_without_query()
+    public function test_parseFilePath_without_query()
     {
         list($f, $q) = Request::parseFilePath('hoge.php');
 
@@ -35,35 +36,35 @@ class RequestTest extends TestCase
         $this->assertEquals('', $q);
     }
 
-    function test_parseFilePath_with_query()
+    public function test_parseFilePath_with_query()
     {
         list($f, $q) = Request::parseFilePath('hoge.php?hoge=fuga&fuga=hoge');
 
         $this->assertEquals('hoge.php', $f);
         $this->assertEquals(
-            "hoge=fuga&fuga=hoge",
+            'hoge=fuga&fuga=hoge',
             $q
         );
     }
 
-    function test_parseFilePath_with_query_and_empersand()
+    public function test_parseFilePath_with_query_and_empersand()
     {
         list($f, $q) = Request::parseFilePath('hoge.php?hoge=fuga&fuga=ho+ge#foobar');
 
         $this->assertEquals('hoge.php', $f);
         $this->assertEquals(
-            "hoge=fuga&fuga=ho+ge",
+            'hoge=fuga&fuga=ho+ge',
             $q
         );
     }
 
-    function test_buildMultipartBody()
+    public function test_buildMultipartBody()
     {
         $body = Request::buildMultipartBody(
-            [   'hoge' => 'hoge hoge',
-                'fuga' => 'fuga fuga'
+            ['hoge' => 'hoge hoge',
+                'fuga' => 'fuga fuga',
             ],
-            [   'file1' => [
+            ['file1' => [
                     'name' => 'hoge.txt',
                     'type' => 'text/plain',
                     'content' => 'AABBCC',
@@ -101,13 +102,13 @@ END
         );
     }
 
-    function test_simple_makeFakeRequest_succeeds()
+    public function test_simple_makeFakeRequest_succeeds()
     {
         list($ret, $stdout, $stderr) = Request::makeFakeRequest(
-            [   'REQUEST_METHOD'  => 'POST',
+            ['REQUEST_METHOD' => 'POST',
                 'SCRIPT_FILENAME' => 'tests/apps/respond.php',
-                'QUERY_STRING'    => 'aaa=aaa&bbb=bbb',
-                'CONTENT_TYPE'    => 'application/x-www-form-urlencoded',
+                'QUERY_STRING' => 'aaa=aaa&bbb=bbb',
+                'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
             ],
             'hello=world&bye=world'
         );
@@ -124,20 +125,20 @@ END
             ],
             'POST' => [
                 'hello' => 'world',
-                'bye'   => 'world',
+                'bye' => 'world',
             ],
             'FILES' => [],
         ], $data);
         $this->assertEquals('', $stderr);
     }
 
-    function test_complex_makeFakeRequest_succeeds()
+    public function test_complex_makeFakeRequest_succeeds()
     {
         list($ret, $stdout, $stderr) = Request::makeFakeRequest(
-            [   'REQUEST_METHOD'  => 'POST',
+            ['REQUEST_METHOD' => 'POST',
                 'SCRIPT_FILENAME' => 'tests/apps/respond.php',
-                'QUERY_STRING'    => 'aaa=aaa&bbb=bbb',
-                'CONTENT_TYPE'    => 'multipart/form-data; boundary=xYzZY',
+                'QUERY_STRING' => 'aaa=aaa&bbb=bbb',
+                'CONTENT_TYPE' => 'multipart/form-data; boundary=xYzZY',
             ],
             <<<END
 --xYzZY
@@ -180,7 +181,7 @@ END
                     'type' => 'text/plain',
                     'size' => 7,
                     'error' => 0,
-                ]
+                ],
             ],
         ], $data);
 
@@ -189,12 +190,12 @@ END
         $this->assertEquals('', $stderr);
     }
 
-    function test_makeFakeRequest_fails()
+    public function test_makeFakeRequest_fails()
     {
         list($ret, $stdout, $stderr) = Request::makeFakeRequest(
-            [   'REQUEST_METHOD'  => 'GET',
+            ['REQUEST_METHOD' => 'GET',
                 'SCRIPT_FILENAME' => 'tests/apps/die.php',
-                'QUERY_STRING'    => '',
+                'QUERY_STRING' => '',
             ],
             'hello=world&bye=world'
         );
@@ -207,7 +208,7 @@ END
         $this->assertRegExp('/\Ahoge/', $body);
     }
 
-    function test_makeFakeResponse()
+    public function test_makeFakeResponse()
     {
         $response = Request::makeFakeResponse(
             "Status: 302 Moved Temporarily\r\nX-Hoge: hoge\r\n\r\n"
@@ -226,7 +227,7 @@ END
         );
     }
 
-    function test_instance()
+    public function test_instance()
     {
         $req = new Request('GET', 'hoge.php');
 
@@ -239,7 +240,7 @@ END
         $this->assertEquals([], $req->getFiles());
     }
 
-    function test_query_component_parsed()
+    public function test_query_component_parsed()
     {
         $req = new Request('GET', 'hoge.php?hoge=fuga&foo=bar#hogefuga');
 
@@ -251,7 +252,7 @@ END
         $this->assertEquals([], $req->getContent());
     }
 
-    function test_arbitrary_header_is_normalized()
+    public function test_arbitrary_header_is_normalized()
     {
         $req = new Request('GET', 'hoge.php', [], ['x-hoge' => 'foobar']);
 
@@ -261,7 +262,7 @@ END
         );
     }
 
-    function test_cgi_header_is_normalized()
+    public function test_cgi_header_is_normalized()
     {
         $req = new Request('GET', 'hoge.php', [], ['content-type' => 'application/json']);
 
@@ -271,7 +272,7 @@ END
         );
     }
 
-    function test_header_is_form()
+    public function test_header_is_form()
     {
         $req = new Request('POST', 'hoge.php', ['hoge' => 'fuga']);
 
@@ -286,7 +287,7 @@ END
         );
     }
 
-    function test_query_and_form()
+    public function test_query_and_form()
     {
         $req = new Request('POST', 'hoge.php?foo=bar', ['hoge' => 'fuga']);
 
@@ -305,7 +306,7 @@ END
         );
     }
 
-    function test_artitrary_content()
+    public function test_artitrary_content()
     {
         $req = new Request(
             'POST',
@@ -325,18 +326,18 @@ END
         );
     }
 
-    function test_send_for_code_200()
+    public function test_send_for_code_200()
     {
         $req = new Request(
             'POST',
             'tests/apps/respond.php?a=a&b=b&c=c',
-            [   'hoge' => 'hoge',
-                'fuga' => 'fuga'
+            ['hoge' => 'hoge',
+                'fuga' => 'fuga',
             ],
-            [   'X-HOGE-FUGA' => 'hogehoge-fugafuga'
+            ['X-HOGE-FUGA' => 'hogehoge-fugafuga',
             ],
-            [   'file1' => ['name' => 'file1.txt', 'type' => 'text/plain', 'content' => 'あああ'],
-                'file2' => 'tests/apps/file.txt.zip'
+            ['file1' => ['name' => 'file1.txt', 'type' => 'text/plain', 'content' => 'あああ'],
+                'file2' => 'tests/apps/file.txt.zip',
             ]
         );
 
@@ -345,7 +346,7 @@ END
         $this->assertRegExp('/\AHTTP\/1\.1 200 OK/', $raw_response);
     }
 
-    function test_send_for_code_302()
+    public function test_send_for_code_302()
     {
         $req = new Request('GET', 'tests/apps/redirect.php');
 
@@ -354,7 +355,7 @@ END
         $this->assertRegExp('/\AHTTP\/1\.1 302 Moved Temporarily/', $raw_response);
     }
 
-    function test_send_json_for_code_200()
+    public function test_send_json_for_code_200()
     {
         $req = new Request(
             'POST',
@@ -371,7 +372,7 @@ END
         );
     }
 
-    function test_cookie_management()
+    public function test_cookie_management()
     {
         $fake_session_id = sha1(rand());
 
@@ -391,9 +392,9 @@ END
         $this->assertEquals('2', $data['visited_count']);
     }
 
-    function test_with_include_path()
+    public function test_with_include_path()
     {
-        Request::addIncludePath(getcwd() . '/tests/apps/include');
+        Request::addIncludePath(getcwd().'/tests/apps/include');
 
         $req = new Request(
             'GET', 'tests/apps/with_include_path.php'
