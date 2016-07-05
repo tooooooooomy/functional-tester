@@ -253,6 +253,15 @@ class FunctionalTester
 
     /**
      * @param string $name
+     * @return string
+     */
+    public function getSessionId()
+    {
+        return session_id();
+    }
+
+    /**
+     * @param string $name
      */
     public function initializeSession($name = 'PHPSESSID')
     {

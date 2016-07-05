@@ -251,4 +251,15 @@ EOI;
             $this->assertEquals($return_var, 0);
         }
     }
+
+    function test_getSessionId()
+    {
+        session_destroy();
+        $tester = new FunctionalTester();
+        $tester->setSession([
+            'hoge' => 'fuga'
+        ]);
+
+        $this->assertEquals(26, strlen($tester->getSessionId()));
+    }
 }
