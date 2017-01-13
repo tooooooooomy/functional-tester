@@ -262,4 +262,15 @@ EOI;
 
         $this->assertEquals(26, strlen($tester->getSessionId()));
     }
+
+    function test_post_has_query_string()
+    {
+        $tester = new FunctionalTester(__DIR__ . '/data/');
+        $response = $tester->post('index.php?hoge=fuga', ['test' => 'hogehoge']);
+        $this->assertEquals(json_decode($response->getBody(), true), [
+            'session' => [],
+            'get' => ['hoge' => 'fuga'],
+            'post' => ['test' => 'hogehoge']
+        ]);
+    }
 }
