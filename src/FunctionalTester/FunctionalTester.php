@@ -185,6 +185,11 @@ class FunctionalTester
      */
     public function post($scriptFile, $parameters = null, $options = null, $files= null)
     {
+        if (preg_match('/(.*)\?(.+)/', $scriptFile, $matches)) {
+            $this->env['QUERY_STRING'] = $matches[2];
+            $scriptFile = $matches[1];
+        }
+
         return $this->request('POST', $scriptFile, $parameters, $options, $files);
     }
 
