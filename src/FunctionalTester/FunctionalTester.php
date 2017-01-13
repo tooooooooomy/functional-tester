@@ -197,10 +197,10 @@ class FunctionalTester
     }
 
     /**
-     * @param string  $method
+     * @param string $method
      * @param string $scriptFile
-     * @param null $data
-     * @param null $options
+     * @param null|array $data
+     * @param null|array $options
      * @return Response
      */
     public function json($method, $scriptFile, $data = null, $options = null)
