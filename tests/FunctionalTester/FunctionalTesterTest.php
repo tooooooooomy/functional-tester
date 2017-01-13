@@ -273,4 +273,13 @@ EOI;
             'post' => ['test' => 'hogehoge']
         ]);
     }
+
+    function test_json()
+    {
+        $tester = new FunctionalTester(__DIR__ . '/data/');
+        $response = $tester->json('POST', 'json.php?hoge=fuga', ['test' => 'hogehoge']);
+        $this->assertEquals(json_decode($response->getBody(), true), [
+            'test' => 'hogehoge'
+        ]);
+    }
 }

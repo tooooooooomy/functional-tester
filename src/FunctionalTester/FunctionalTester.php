@@ -110,9 +110,10 @@ class FunctionalTester
      * @param null|array $parameters
      * @param null|array $options
      * @param null $files
+     * @param null|string $content
      * @return Response
      */
-    public function request($method, $scriptFile, $parameters = null, $options = null, $files = null)
+    public function request($method, $scriptFile, $parameters = null, $options = null, $files = null, $content = null)
     {
         $execFile = $this->generateExecFile($scriptFile);
 
@@ -126,6 +127,8 @@ class FunctionalTester
         if ($files) {
             $reqBody = $this->generateStringForMultiPart($parameters, $files);
             $defaultOptions['CONTENT_TYPE'] = 'multipart/form-data; boundary=' . $this->boundary;
+        } elseif ($content) {
+            $reqBody = $content;
         } else {
             $reqBody = ($parameters) ? http_build_query($parameters) : "";
         }
@@ -191,6 +194,25 @@ class FunctionalTester
         }
 
         return $this->request('POST', $scriptFile, $parameters, $options, $files);
+    }
+
+    /**
+     * @param string $method
+     * @param string $scriptFile
+     * @param null|array $data
+     * @param null|array $options
+     * @return Response
+     */
+    public function json($method, $scriptFile, $data = null, $options = null)
+    {
+        if (preg_match('/(.*)\?(.+)/', $scriptFile, $matches)) {
+            $this->env['QUERY_STRING'] = $matches[2];
+            $scriptFile = $matches[1];
+        }
+
+        $options['CONTENT_TYPE'] = 'application/json';
+
+        return $this->request($method, $scriptFile, null, $options, null, json_encode($data));
     }
 
     /**
