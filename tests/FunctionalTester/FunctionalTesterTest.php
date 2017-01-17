@@ -282,4 +282,39 @@ EOI;
             'test' => 'hogehoge'
         ]);
     }
+
+    function test_put()
+    {
+        $tester = new FunctionalTester(__DIR__ . '/data/');
+        $response = $tester->put('parse_input.php?hoge=fuga', ['test' => 'hogehoge']);
+        $this->assertEquals(json_decode($response->getBody()->getContents(), true), [
+            'method' => 'PUT',
+            'parameters' => [
+                'test' => 'hogehoge',
+            ]
+        ]);    }
+
+    function test_delete()
+    {
+        $tester = new FunctionalTester(__DIR__ . '/data/');
+        $response = $tester->delete('parse_input.php?hoge=fuga', ['test' => 'hogehoge']);
+        $this->assertEquals(json_decode($response->getBody()->getContents(), true), [
+            'method' => 'DELETE',
+            'parameters' => [
+                'test' => 'hogehoge',
+            ]
+        ]);
+    }
+
+    function test_patch()
+    {
+        $tester = new FunctionalTester(__DIR__ . '/data/');
+        $response = $tester->patch('parse_input.php?hoge=fuga', ['test' => 'hogehoge']);
+        $this->assertEquals(json_decode($response->getBody()->getContents(), true), [
+            'method' => 'PATCH',
+            'parameters' => [
+                'test' => 'hogehoge',
+            ]
+        ]);
+    }
 }

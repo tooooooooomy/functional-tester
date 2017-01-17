@@ -176,7 +176,7 @@ class FunctionalTester
             $this->env['QUERY_STRING'] = http_build_query($parameters);
         }
 
-        return $this->request('GET', $scriptFile, $parameters, $options);
+        return $this->request('GET', $scriptFile, null, $options);
     }
 
     /**
@@ -194,6 +194,57 @@ class FunctionalTester
         }
 
         return $this->request('POST', $scriptFile, $parameters, $options, $files);
+    }
+
+    /**
+     * @param string $scriptFile
+     * @param null|array $parameters
+     * @param null|array $options
+     * @param null|array $files
+     * @return Response
+     */
+    public function delete($scriptFile, $parameters = null, $options = null, $files= null)
+    {
+        if (preg_match('/(.*)\?(.+)/', $scriptFile, $matches)) {
+            $this->env['QUERY_STRING'] = $matches[2];
+            $scriptFile = $matches[1];
+        }
+
+        return $this->request('DELETE', $scriptFile, $parameters, $options, $files);
+    }
+
+    /**
+     * @param string $scriptFile
+     * @param null|array $parameters
+     * @param null|array $options
+     * @param null|array $files
+     * @return Response
+     */
+    public function put($scriptFile, $parameters = null, $options = null, $files= null)
+    {
+        if (preg_match('/(.*)\?(.+)/', $scriptFile, $matches)) {
+            $this->env['QUERY_STRING'] = $matches[2];
+            $scriptFile = $matches[1];
+        }
+
+        return $this->request('PUT', $scriptFile, $parameters, $options, $files);
+    }
+
+    /**
+     * @param string $scriptFile
+     * @param null|array $parameters
+     * @param null|array $options
+     * @param null|array $files
+     * @return Response
+     */
+    public function patch($scriptFile, $parameters = null, $options = null, $files= null)
+    {
+        if (preg_match('/(.*)\?(.+)/', $scriptFile, $matches)) {
+            $this->env['QUERY_STRING'] = $matches[2];
+            $scriptFile = $matches[1];
+        }
+
+        return $this->request('PATCH', $scriptFile, $parameters, $options, $files);
     }
 
     /**
