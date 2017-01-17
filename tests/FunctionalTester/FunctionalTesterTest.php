@@ -282,4 +282,11 @@ EOI;
             'test' => 'hogehoge'
         ]);
     }
+
+    function test_put()
+    {
+        $tester = new FunctionalTester(__DIR__ . '/data/');
+        //$response = $tester->put('json.php?hoge=fuga', ['test' => 'hogehoge']);
+        //print $response;
+    }
 }
