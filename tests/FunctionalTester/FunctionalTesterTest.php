@@ -286,7 +286,21 @@ EOI;
     function test_put()
     {
         $tester = new FunctionalTester(__DIR__ . '/data/');
-        //$response = $tester->put('json.php?hoge=fuga', ['test' => 'hogehoge']);
-        //print $response;
+        $response = $tester->put('json.php?hoge=fuga', ['test' => 'hogehoge']);
+        print $response;
+    }
+
+    function test_delete()
+    {
+        $tester = new FunctionalTester(__DIR__ . '/data/');
+        $response = $tester->delete('json.php?hoge=fuga', ['test' => 'hogehoge']);
+        print $response;
+    }
+
+    function test_patch()
+    {
+        $tester = new FunctionalTester(__DIR__ . '/data/');
+        $response = $tester->patch('json.php?hoge=fuga', ['test' => 'hogehoge']);
+        print $response;
     }
 }
