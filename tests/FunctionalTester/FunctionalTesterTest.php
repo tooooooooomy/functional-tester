@@ -286,21 +286,26 @@ EOI;
     function test_put()
     {
         $tester = new FunctionalTester(__DIR__ . '/data/');
-        $response = $tester->put('json.php?hoge=fuga', ['test' => 'hogehoge']);
+        $response = $tester->put('parse_input.php?hoge=fuga', ['test' => 'hogehoge']);
         print $response;
     }
 
     function test_delete()
     {
         $tester = new FunctionalTester(__DIR__ . '/data/');
-        $response = $tester->delete('json.php?hoge=fuga', ['test' => 'hogehoge']);
+        $response = $tester->delete('parse_input.php?hoge=fuga', ['test' => 'hogehoge']);
         print $response;
     }
 
     function test_patch()
     {
         $tester = new FunctionalTester(__DIR__ . '/data/');
-        $response = $tester->patch('json.php?hoge=fuga', ['test' => 'hogehoge']);
-        print $response;
+        $response = $tester->patch('parse_input.php?hoge=fuga', ['test' => 'hogehoge']);
+        $this->assertEquals(json_decode($response->getBody()->getContents(), true), [
+            'method' => 'PUT',
+            'parameters' => [
+                'test' => 'hogehoge',
+            ]
+        ]);
     }
 }
